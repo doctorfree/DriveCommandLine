@@ -31,9 +31,6 @@ dpkg=`type -p dpkg-deb`
 PKG_VER=${VERSION}
 PKG_REL=${RELEASE}
 
-# Build gdrive binary
-go get gitlab.com/doctorfree/DriveCommandLine
-
 # Subdirectory in which to create the distribution files
 OUT_DIR="dist/${PKG_NAME}_${PKG_VER}"
 
@@ -75,12 +72,10 @@ done
 
 ${SUDO} cp scripts/* ${OUT_DIR}/${LBIN}
 
-[ -f ${HOME}/go/bin/gdrive ] || {
-    echo "Cannot locate gdrive binary at $HOME/go/bin/gdrive"
-    echo "Exiting"
-    exit 1
-}
-${SUDO} cp ${HOME}/go/bin/gdrive ${OUT_DIR}/${LBIN}
+# Build gdrive binary
+# go get gitlab.com/doctorfree/DriveCommandLine
+
+${SUDO} cp gdrive ${OUT_DIR}/${LBIN}
 
 # ${SUDO} cp AUTHORS ${OUT_DIR}/${TOP}/share/doc/${PKG}/AUTHORS
 ${SUDO} cp LICENSE ${OUT_DIR}/${TOP}/share/doc/${PKG}/copyright
