@@ -7,7 +7,7 @@ image: golang:latest
 
 variables:
   # Please edit to your GitLab project
-  REPO_NAME: gitlab.com/doctorfree/gdrive
+  REPO_NAME: gitlab.com/doctorfree/DriveCommandLine
 
 # The problem is that to be able to use go get, one needs to put
 # the repository in the $GOPATH. So for example if your gitlab domain
@@ -21,27 +21,12 @@ before_script:
   - cd $GOPATH/src/$REPO_NAME
 
 stages:
-  - test
   - build
-
-format:
-  stage: test
-  script:
-    - go fmt $(go list ./... | grep -v /vendor/)
-    - go vet $(go list ./... | grep -v /vendor/)
-    - go test -race $(go list ./... | grep -v /vendor/)
-
-compile:
-  stage: build
-  script:
-    - go build -race -ldflags "-extldflags '-static'" -o $CI_PROJECT_DIR/gdrive
-  artifacts:
-    paths:
-      - gdrive
 
 run-build:  
   stage: build
   script:
+    - go build -ldflags '-w -s' -o ${CI_PROJECT_DIR}/gdrive
     - ./mkpkg
 
   # This stage is only executed for new tags
