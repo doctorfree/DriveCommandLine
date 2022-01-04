@@ -77,7 +77,12 @@ ${SUDO} cp scripts/* ${OUT_DIR}/${LBIN}
 [ -d ${HOME}/go ] || mkdir -p ${HOME}/go
 [ -d ${HOME}/go/bin ] || mkdir -p ${HOME}/go/bin
 go install github.com/prasmussen/gdrive@latest
-[ -f ${HOME}/go/bin/gdrive ] && ${SUDO} cp ${HOME}/go/bin/gdrive ${OUT_DIR}/${LBIN}
+if [ "${GOPATH}" ]
+then
+    [ -f ${GOPATH}/bin/gdrive ] && ${SUDO} cp ${GOPATH}/bin/gdrive ${OUT_DIR}/${LBIN}
+else
+    [ -f ${HOME}/go/bin/gdrive ] && ${SUDO} cp ${HOME}/go/bin/gdrive ${OUT_DIR}/${LBIN}
+fi
 
 ${SUDO} cp AUTHORS ${OUT_DIR}/${TOP}/share/doc/${PKG}/AUTHORS
 ${SUDO} cp LICENSE ${OUT_DIR}/${TOP}/share/doc/${PKG}/copyright
@@ -119,9 +124,12 @@ have_rpm=`type -p rpmbuild`
   ${SUDO} apt-get install rpm -y
 }
 
-rpmbuild -ba --build-in-place \
+[ -d ${OUT_DIR}/BUILDROOT ] || ${SUDO} mkdir -p ${OUT_DIR}/BUILDROOT
+[ -d ${OUT_DIR}/BUILDROOT/usr ] && ${SUDO} rm -rf ${OUT_DIR}/BUILDROOT/usr
+${SUDO} cp -a ${OUT_DIR}/usr ${OUT_DIR}/BUILDROOT/usr
+
+${SUDO} rpmbuild -ba --build-in-place \
    --define "_topdir ${OUT_DIR}" \
-   --define "_sourcedir ${OUT_DIR}" \
    --define "_version ${PKG_VER}" \
    --define "_release ${PKG_REL}" \
    --buildroot ${SRC}/${SRC_NAME}/${OUT_DIR}/BUILDROOT \

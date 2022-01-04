@@ -12,7 +12,6 @@ Packager:   ronaldrecord@gmail.com
 Manage your Google Drive from the command line
 
 %prep
-cp -a %{_sourcedir}/usr %{_sourcedir}/BUILDROOT/usr
 
 %build
 
