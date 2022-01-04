@@ -1,0 +1,195 @@
+#!/bin/bash
+#
+# Usage: ./Install [package names]
+#   If no package names are specified then all currently
+#   supported packages will be installed
+#
+# Versions of apt prior to 1.1 do not support install by Debian filename
+# You should probably be running a more recent version of apt
+# On these early versions, install with the following:
+#
+# sudo dpkg -i "${DEB}"
+# sudo apt-get install -f
+
+SRC_NAME="gdrive"
+PKG_NAMES="gdrive"
+APT_NAMES="gdrive"
+SRC="${HOME}/src"
+
+PKG_INSTALLED=
+PKG_AVAILABLE=
+PKG_SELECTED=
+
+[ -f "${SRC}/${SRC_NAME}/VERSION" ] || {
+  echo "Missing VERSION file: ${SRC}/${SRC_NAME}/VERSION"
+  echo "Exiting"
+  exit 1
+}
+
+. "${SRC}/${SRC_NAME}/VERSION"
+PKG_VER=${VERSION}
+PKG_REL=${RELEASE}
+
+get_available_packages() {
+  for pkgs in ${SRC}/${SRC_NAME}/releases/${PKG_VER}/*.${SUF}
+  do
+    [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/${PKG_VER}/*.${SUF}" ] || {
+      for pkg in ${pkgs}
+      do
+        pkgname=`basename ${pkg} | sed -e "s/_${PKG_VER}.${SUF}//"` 
+        PKG_AVAILABLE="${PKG_AVAILABLE} ${pkgname}"
+      done
+    }
+  done
+  PKG_AVAILABLE=`echo $PKG_AVAILABLE | sed -e "s/^ //"`
+}
+
+get_installed_packages() {
+  for pkg in ${APT_NAMES}
+  do
+    dpkg -s ${pkg} | grep Status: | grep 'ok installed' > /dev/null && {
+      case "${pkg}" in
+        "gdrive")
+            PKG_INSTALLED="${PKG_INSTALLED} gdrive"
+            ;;
+       esac
+    }
+  done
+  PKG_INSTALLED=`echo $PKG_INSTALLED | sed -e "s/^ //"`
+}
+
+check_package_names() {
+  for nam in ${PKG_NAMES}
+  do
+    echo "${PKG_NAMES}" | grep ${nam} > /dev/null || {
+      echo "${nam} is not a valid package name. Skipping installation of ${nam}"
+      PKG_NAMES=`echo "${PKG_NAMES}" | sed -e "s/${nam}//"`
+    }
+  done
+  echo "${PKG_NAMES}" | grep gdrive > /dev/null && {
+    # Make sure gdrive is installed first
+    pkg_names_tmp=`echo "${PKG_NAMES}" | sed -e "s/gdrive//"`
+    PKG_NAMES="gdrive ${pkg_names_tmp}"
+  }
+}
+
+debian=
+have_apt=`type -p apt`
+have_dpkg=`type -p dpkg`
+have_rpm=`type -p rpm`
+have_yum=`type -p yum`
+[ -f /etc/os-release ] && . /etc/os-release
+[ "${ID_LIKE}" == "debian" ] && debian=1
+[ "${debian}" ] || [ -f /etc/debian_version ] && debian=1
+
+SUF=deb
+[ "${debian}" ] || SUF=rpm
+
+get_available_packages
+[ "$PKG_AVAILABLE}" ] || {
+  echo "No packages for version ${PKG_VER}-${PKG_REL} are currently available. Exiting."
+  exit 1
+}
+
+install_selected() {
+  for pkg in ${PKG_AVAILABLE}
+  do
+    while true
+    do
+      read -p "Install ${pkg} ? ('Y'/'N'): " yn
+      case $yn in
+          [Yy]*)
+              PKG_SELECTED="${PKG_SELECTED} $pkg"
+              break
+              ;;
+          [Nn]*)
+              break
+              ;;
+          * )
+              echo "Please answer yes or no."
+              ;;
+      esac
+    done
+  done
+  PKG_SELECTED=`echo $PKG_SELECTED | sed -e "s/^ //"`
+}
+
+[ "$1" ] && {
+  # If invoked with -i argument, present a menu of options to select from
+  if [ "$1" == "-i" ]
+  then
+    shift
+    PKG_NAMES="$*"
+    check_package_names
+    get_installed_packages
+    [ "${PKG_INSTALLED}" ] && {
+      echo "Currently installed gdrive packages:"
+      echo ""
+      for instpkg in ${PKG_INSTALLED}
+      do
+        echo "$instpkg"
+      done
+      echo ""
+    }
+    [ "${PKG_AVAILABLE}" ] && {
+      echo "Currently available gdrive packages:"
+      echo ""
+      for avaipkg in ${PKG_AVAILABLE}
+      do
+        echo "$avaipkg"
+      done
+      echo ""
+    }
+    while true
+    do
+      PS3="${BOLD}Please enter your desire (numeric or text): ${NORMAL}"
+      options=("Install All" "Install Selected" "Quit")
+      select opt in "${options[@]}"
+      do
+        case "$opt,$REPLY" in
+            "Install All",*|*,"Install All")
+                PKG_NAMES="${PKG_AVAILABLE}"
+                break 2
+                ;;
+            "Install Selected",*|*,"Install Selected")
+                install_selected
+                PKG_NAMES="${PKG_SELECTED}"
+                break 2
+                ;;
+            "Quit",*|*,"Quit"|"quit",*|*,"quit")
+                printf "\nExiting\n"
+                exit 0
+                ;;
+        esac
+      done
+    done
+  else
+    PKG_NAMES="$*"
+  fi
+  check_package_names
+}
+
+[ "${PKG_NAMES}" ] || {
+  echo "No valid Package names specified. Exiting."
+  exit 1
+}
+
+for PKG_NAME in ${PKG_NAMES}
+do
+  DEB="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF}"
+  [ -f "${DEB}" ] || {
+    echo "${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF} not found."
+    for pkgs in ${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}
+    do
+      [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}" ] || {
+        echo "Found existing packages:"
+        echo "${pkgs}"
+      }
+    done
+    echo ""
+    continue
+  }
+
+  echo "Installing ${DEB}"
+  sudo apt install "${DEB}"
+done
