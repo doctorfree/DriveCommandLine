@@ -1,26 +1,135 @@
-gdrive
-======
+> **"The cosmic operating system uses a command line interface. It runs on
+> something like a teletype, with lots of noise and heat; punched-out bits
+> flutter down into its hopper like drifting stars. The demiurge sits at his
+> teletype, pounding out one command line after another, specifying the values
+> of fundamental constants of physics:**
+>
+> `universe -G 6.672e-11 -e 1.602e-19 -h 6.626e-34 -protonmass 1.673e-27`
+>
+> **and when he’s finished typing out the command line, his right pinky hesitates
+> above the enter key for an aeon or two, wondering what’s going to happen;
+> then down it comes—and the whack you hear is another Big Bang."**
+>
+> ― Neal Stephenson, In the Beginning...Was the Command Line
 
+# DriveCommandLine
+This repository maintains a collection of scripts to initialize,
+configure, monitor, and manage Google Drive. It includes a build of the
+[gdrive command line utility](https://github.com/prasmussen/gdrive).
+The primary value proposition of this repository over the original gdrive repo
+is the addition of several user-friendly features such as native platform
+intallation packaging and wrapper scripts that hopefully make the gdrive
+utility easier to use.
+
+## Table of contents
+
+1. [Overview](#overview)
+1. [News](#news)
+1. [Prerequisites](#prerequisites)
+1. [Installation](#installation)
+    1. [Debian Package installation](#debian-package-installation)
+    1. [RPM Package installation](#rpm-package-installation)
+    1. [Manual installation](#manual-installation)
+    1. [Authentication and access](#authentication-and-access)
+1. [Usage](#usage)
+1. [Examples](#examples)
+1. [Compile from source](#compile-from-source)
 
 ## Overview
-gdrive is a command line utility for interacting with Google Drive.
+The DriveCommandLine package includes gdrive, a command line utility for
+interacting with Google Drive and several wrapper scripts for easily performing
+many of the Google Drive management tasks the gdrive utility enables from
+the command line.
+
+The DriveCommandLine Debian and RPM format installation packages automate
+the installation and configuration process.
+
+Currently the DriveCommandLine control scripts include support for:
+
+- Creating folder IDs for each Google Drive folder or specified folders
+- Retrieving info on files or folders in Google Drive by file/folder name
+- Listing, downloading, uploading, and removing Google Drive files and folders
+- Syncing specified folders to Google Drive
+- Syncing from Google Drive
+- Retrieving Google Drive folder IDs
 
 ## News
 #### 28.05.2021
-gdrive is finally verified for using sensitive scopes which should fix the `This app is blocked` error. Note that the project name will show up as `project-367116221053` when granting access to you account. (I don't dare to change any more settings in the google console.)
+gdrive is finally verified for using sensitive scopes which should fix the
+`This app is blocked` error. Note that the project name will show up as
+`project-367116221053` when granting access to you account.
 
 ## Prerequisites
 None, binaries are statically linked.
-If you want to compile from source you need the [go toolchain](http://golang.org/doc/install).
-Version 1.5 or higher.
+If you want to compile from source you need the
+[go toolchain](http://golang.org/doc/install) version 1.5 or higher.
 
 ## Installation
-### With [Homebrew](http://brew.sh) on Mac
+
+DriveCommandLine can be installed on Linux systems using
+either the Debian packaging format or the Red Hat Package Manager (RPM).
+Other systems will require a manual installation described below.
+
+### Debian Package installation
+
+Many Linux distributions, most notably Ubuntu and its derivatives, use the
+Debian packaging system.
+
+To tell if a Linux system is Debian based it is usually sufficient to
+check for the existence of the file `/etc/debian_version` and/or examine the
+contents of the file `/etc/os-release`.
+
+To install on a Debian based Linux system, download the latest Debian format
+package from the
+[DriveCommandLine Releases](https://gitlab.com/doctorfree/DriveCommandLine/-/releases).
+
+Install the DriveCommandLine package by executing the command
+
+```bash
+sudo apt install ./DriveCommandLine_<version>-<release>.deb
 ```
-brew install gdrive
+or
+```console
+sudo dpkg -i ./DriveCommandLine_<version>-<release>.deb
 ```
-### Other
-Download `gdrive` from one of the [links in the latest release](https://github.com/prasmussen/gdrive/releases).
+
+### RPM Package installation
+
+Red Hat Linux, SUSE Linux, and their derivatives use the RPM packaging
+format. RPM based Linux distributions include Fedora, AlmaLinux, CentOS,
+openSUSE, OpenMandriva, Mandrake Linux, Red Hat Linux, and Oracle Linux.
+
+To install on an RPM based Linux system, download the latest RPM format
+package from the
+[DriveCommandLine Releases](https://gitlab.com/doctorfree/DriveCommandLine/-/releases).
+
+Install the DriveCommandLine package by executing the command
+
+```bash
+sudo yum localinstall ./DriveCommandLine_<version>-<release>.rpm
+```
+or
+```console
+sudo rpm -i ./DriveCommandLine_<version>-<release>.rpm
+```
+
+### Manual installation
+
+Download the latest compressed tar archive release for your platform
+from the latest
+[DriveCommandLine Releases](https://gitlab.com/doctorfree/DriveCommandLine/-/releases).
+
+As root, extract the archive from the root directory. For example, to install
+from the gzip'd tar archive:
+
+```bash
+sudo -i
+cd /
+tar xzf /path/to/downloaded/DriveCommandLine_2.1.1-1-dist.tar.gz
+```
+
+### Authentication and access
+
 The first time gdrive is launched (i.e. run `gdrive about` in your
 terminal not just `gdrive`), you will be prompted for a verification code.
 The code is obtained by following the printed url and authenticating with the
@@ -31,39 +140,6 @@ If you want to manage multiple drives you can use the global `--config` flag
 or set the environment variable `GDRIVE_CONFIG_DIR`.
 Example: `GDRIVE_CONFIG_DIR="/home/user/.gdrive-secondary" gdrive list`
 You will be prompted for a new verification code if the folder does not exist.
-
-## Compile from source
-```bash
-go get github.com/prasmussen/gdrive
-```
-The gdrive binary should now be available at `$GOPATH/bin/gdrive`
-
-
-### Syncing
-Gdrive supports basic syncing. It only syncs one way at the time and works
-more like rsync than e.g. dropbox. Files that are synced to google drive
-are tagged with an appProperty so that the files on drive can be traversed
-faster. This means that you can't upload files with `gdrive upload` into
-a sync directory as the files would be missing the sync tag, and would be
-ignored by the sync commands.
-The current implementation is slow and uses a lot of memory if you are
-syncing many files. Currently only one file is uploaded at the time,
-the speed can be improved in the future by uploading several files concurrently.
-To learn more see usage and the examples below.
-
-### Service Account
-For server to server communication, where user interaction is not a viable option, 
-is it possible to use a service account, as described in this [Google document](https://developers.google.com/identity/protocols/OAuth2ServiceAccount).
-If you want to use a service account, instead of being interactively prompted for
-authentication, you need to use the `--service-account <serviceAccountCredentials>` 
-global option, where `serviceAccountCredentials` is a file in JSON format obtained
-through the Google API Console, and its location is relative to the config dir. 
-
-#### .gdriveignore
-Placing a .gdriveignore in the root of your sync directory can be used to
-skip certain files from being synced. .gdriveignore follows the same
-rules as [.gitignore](https://git-scm.com/docs/gitignore), except that gdrive only reads the .gdriveignore file in the root of the sync directory, not ones in any subdirectories.
-
 
 ## Usage
 ```
@@ -97,6 +173,31 @@ gdrive help                                                    Print help
 gdrive help <command>                                          Print command help
 gdrive help <command> <subcommand>                             Print subcommand help
 ```
+
+### Syncing
+Gdrive supports basic syncing. It only syncs one way at the time and works
+more like rsync than e.g. dropbox. Files that are synced to google drive
+are tagged with an appProperty so that the files on drive can be traversed
+faster. This means that you can't upload files with `gdrive upload` into
+a sync directory as the files would be missing the sync tag, and would be
+ignored by the sync commands.
+The current implementation is slow and uses a lot of memory if you are
+syncing many files. Currently only one file is uploaded at the time,
+the speed can be improved in the future by uploading several files concurrently.
+To learn more see usage and the examples below.
+
+### Service Account
+For server to server communication, where user interaction is not a viable option, 
+is it possible to use a service account, as described in this [Google document](https://developers.google.com/identity/protocols/OAuth2ServiceAccount).
+If you want to use a service account, instead of being interactively prompted for
+authentication, you need to use the `--service-account <serviceAccountCredentials>` 
+global option, where `serviceAccountCredentials` is a file in JSON format obtained
+through the Google API Console, and its location is relative to the config dir. 
+
+#### .gdriveignore
+Placing a .gdriveignore in the root of your sync directory can be used to
+skip certain files from being synced. .gdriveignore follows the same
+rules as [.gitignore](https://git-scm.com/docs/gitignore), except that gdrive only reads the .gdriveignore file in the root of the sync directory, not ones in any subdirectories.
 
 #### List files
 ```
@@ -743,3 +844,9 @@ Id                             Path                             Type   Size     
 0B3X9GlR6EmbnX1RIT2w1TWZYWFU   windows/gdrive-windows-386.exe   bin    6.1 MB   2016-02-21 22:55:15
 0B3X9GlR6EmbndmVMU05POGRPS3c   windows/gdrive-windows-x64.exe   bin    7.8 MB   2016-02-21 22:55:18
 ```
+
+## Compile from source
+```bash
+go get gitlab.com/doctorfree/DriveCommandLine
+```
+The gdrive binary should now be available at `$GOPATH/bin/gdrive`

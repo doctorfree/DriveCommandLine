@@ -1,0 +1,6 @@
+
+For job ref 1926121325 and job name 'run-build'
+
+Browse artifacts
+
+https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/1926121325/artifacts/browse?job=run-build
