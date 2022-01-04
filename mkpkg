@@ -132,6 +132,7 @@ ${SUDO} rpmbuild -ba --build-in-place \
    --define "_topdir ${OUT_DIR}" \
    --define "_version ${PKG_VER}" \
    --define "_release ${PKG_REL}" \
+   --define "_sourcedir ${OUT_DIR}" \
    --buildroot ${SRC}/${SRC_NAME}/${OUT_DIR}/BUILDROOT \
    ${OUT_DIR}/rpm/${PKG_NAME}.spec
 

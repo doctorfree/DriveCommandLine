@@ -16,6 +16,7 @@ Manage your Google Drive from the command line
 %build
 
 %install
+cp -a %{_sourcedir}/usr %{buildroot}/usr
 
 %pre
 
