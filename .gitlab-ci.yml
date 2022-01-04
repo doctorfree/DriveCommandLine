@@ -23,14 +23,6 @@ before_script:
 stages:
   - build
 
-compile:
-  stage: build
-  script:
-    - go build -ldflags '-w -s' -o ${CI_PROJECT_DIR}/gdrive
-  artifacts:
-    paths:
-      - gdrive
-
 run-build:  
   stage: build
   script:
