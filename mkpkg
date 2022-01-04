@@ -72,10 +72,14 @@ done
 
 ${SUDO} cp scripts/* ${OUT_DIR}/${LBIN}
 
-# Build gdrive binary
-# go get gitlab.com/doctorfree/DriveCommandLine
-
-${SUDO} cp gdrive ${OUT_DIR}/${LBIN}
+if [ -f gdrive ]
+then
+    ${SUDO} cp gdrive ${OUT_DIR}/${LBIN}
+else
+    # Build gdrive binary
+    go get gitlab.com/doctorfree/DriveCommandLine
+    [ -f ${HOME}/go/bin/gdrive ] && ${SUDO} cp ${HOME}/go/bin/gdrive ${OUT_DIR}/${LBIN}
+fi
 
 # ${SUDO} cp AUTHORS ${OUT_DIR}/${TOP}/share/doc/${PKG}/AUTHORS
 ${SUDO} cp LICENSE ${OUT_DIR}/${TOP}/share/doc/${PKG}/copyright
