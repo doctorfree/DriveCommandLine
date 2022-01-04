@@ -14,12 +14,16 @@
 
 # DriveCommandLine
 This repository maintains a collection of scripts to initialize,
-configure, monitor, and manage Google Drive. It includes a build of the
-[gdrive command line utility](https://github.com/prasmussen/gdrive).
-The primary value proposition of this repository over the original gdrive repo
-is the addition of several user-friendly features such as native platform
+configure, monitor, and manage Google Drive. The packaging includes
+a build of the [gdrive command line utility](https://github.com/prasmussen/gdrive).
+DriveCommandLine provides several user-friendly features such as native platform
 intallation packaging and wrapper scripts that hopefully make the gdrive
-utility easier to use.
+utility easier to use. The gdrive binary included in the installation packages
+is built from the latest version of the original gdrive repository maintained
+by Petter Rasmussen. No changes have been made to the gdrive utility and its
+use is described below. What you are getting here is packaging for ease of
+installation and maintenance along with user-friendly wrapper scripts and
+documentation.
 
 ## Table of contents
 
