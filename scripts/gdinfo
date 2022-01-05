@@ -52,11 +52,11 @@ GDOPTS="--no-header --absolute --max 100 --name-width 0"
 cd ${GDHOME}
 
 usage() {
-    printf "\nUsage: gdinfo filename|foldername [file2|folder2 ...]\n"
+    printf "\nUsage: gdinfo [-u] filename|foldername [file2|folder2 ...]\n"
     exit 1
 }
 
-if [ $# -eq 0 ]
+if [ $# -eq 0 ] || [ "$1" == "-u" ]
 then
   usage
 else

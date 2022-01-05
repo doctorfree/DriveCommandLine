@@ -37,6 +37,7 @@ documentation.
     1. [Authentication and access](#authentication-and-access)
 1. [Usage](#usage)
 1. [Examples](#examples)
+1. [Documentation](#documentation)
 1. [Compile from source](#compile-from-source)
 
 ## Overview
@@ -848,6 +849,21 @@ Id                             Path                             Type   Size     
 0B3X9GlR6EmbnX1RIT2w1TWZYWFU   windows/gdrive-windows-386.exe   bin    6.1 MB   2016-02-21 22:55:15
 0B3X9GlR6EmbndmVMU05POGRPS3c   windows/gdrive-windows-x64.exe   bin    7.8 MB   2016-02-21 22:55:18
 ```
+
+## Documentation
+
+Many DriveCommandLine commands have manual pages. Execute `man <command-name>`
+to view the manual page for a command. Most commands also have help/usage messages
+that can be viewed with the **-u** argument option, e.g. `sync2drive -u`.
+
+Manual pages for these DriveCommandLine commands can be viewed by executing
+any of the following commands (click to view the man page online):
+
+- [man gdinfo](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdinfo.1.md)
+- [man gdrm](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdrm.1.md)
+- [man getfolderids](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/getfolderids.1.md)
+- [man sync2drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync2drive.1.md)
+- [man sync_from_drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync_from_drive.1.md)
 
 ## Compile from source
 ```bash
