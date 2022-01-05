@@ -43,6 +43,7 @@ documentation.
 1. [Examples](#examples)
 1. [Limitations](#limitations)
 1. [Compile from source](#compile-from-source)
+    1. [Cool feature used by this repository](#cool-feature-used-by-this-repository)
 
 ## Overview
 The DriveCommandLine package includes gdrive, a command line utility for
@@ -1027,3 +1028,41 @@ go install github.com/prasmussen/gdrive@latest
 ```
 
 The gdrive binary should now be available at `$GOPATH/bin/gdrive`
+
+If you want to create your own custom DriveCommandLine package then you
+need the appropriate packaging tools installed on your system.
+
+For the creation of Debian format installable packages the `build-essential`
+package is required and the `devscripts` package is useful for maintainers.
+
+For the creation of RPM format installable packages several packages are
+required/useful.
+
+On Fedora, CentOS 8, and RHEL 8:
+
+```bash
+dnf install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools
+```
+
+On CentOS 7 and RHEL 7:
+
+```bash
+yum install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools
+```
+
+### Cool feature used by this repository
+
+I am a GO fanboy but I was unaware of the ease with which GO builds and installs
+can be performed and integrated into a repository's continuous integration.
+
+The DriveCommandLine packages include the `gdrive` command line control of Google
+Drive. This is a GO binary. Rather than fork or clone the entire `gdrive`
+repository, this repository's CI build of DriveCommandLine packages employs
+the remote build and installation of `gdrive` by the simple invocation of the
+command:
+
+`go install github.com/prasmussen/gdrive@latest`
+
+during package creation. That is, I am able to build and install from a remote
+repository during this repository's packaging process. I thought that was
+pretty cool.
