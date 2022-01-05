@@ -52,9 +52,23 @@ cd ${GDHOME}
 
 for file in "$@"
 do
+    recursive=
+
+    # Does the file or folder exist locally
+    if [ -d "${file}" ]
+    then
+        recursive="--recursive"
+    else
+        [ -f "${file}" ] || {
+            echo "$file does not exist in local directory. Skipping."
+            continue
+        }
+    fi
+
     # Check to see if this is a sync folder
     exists=
     pdir=`dirname "${file}"`
+    base=`basename "${file}"`
     [ -f "${pdir}"/.folderid ] || {
         echo "Missing ${pdir}/.folderid"
         echo "Run 'getfolderids' to populate folders with ids"
@@ -79,15 +93,74 @@ do
       continue
     }
 
-    recursive=
-    if [ -d "${file}" ]
-    then
-        recursive="--recursive"
-    else
-        [ -f "${file}" ] || {
-            echo "$file does not exist in local directory. Skipping."
-            continue
+    typ=
+    skip=
+    sync=
+    delete=
+    fid=
+    # Check to see if this file or folder already exists. Then what?
+    while read match
+    do
+      id=`echo ${match} | awk ' { print $1 } '`
+      [ "${id}" ] || continue
+      path=`gdrive info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
+      # Remove leading and trailing spaces
+      path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      [ "${path}" == "${file}" ] && {
+        fid=${id}
+        typ=`gdrive info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
+        typ="$(echo -e "${typ}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+        echo ${typ} | grep folder > /dev/null && typ="dir"
+        [ "${typ}" == "dir" ] && {
+          echo "A Google Drive folder '${file}' already exists."
+          echo "Uploading '${file}' would create a new folder with the same name"
+          echo "and a different Google Drive ID."
+          while true
+          do
+            PS3="${BOLD}Please enter your desire (numeric or text): ${NORMAL}"
+            options=("Preserve Existing Folder and Create Sync Folder" "Delete Existing Folder and Upload New" "Create New Duplicate Folder Name" "Skip '${file}' Upload")
+            select opt in "${options[@]}"
+            do
+              case "$opt,$REPLY" in
+                  "Preserve"*,*|*,"Preserve"*)
+                      printf "\nCreating Sync folder '${file}'\n"
+                      sync=1
+                      break 3
+                      ;;
+                  "Delete"*,*|*,"Delete"*)
+                      printf "\nDeleting existing folder and uploading '${file}'\n"
+                      delete=1
+                      break 3
+                      ;;
+                  "Create"*,*|*,"Create"*)
+                      printf "\nCreating duplicate folder name '${file}'\n"
+                      break 3
+                      ;;
+                  "Skip"*,*|*,"Skip"*|"skip"*,*|*,"skip"*)
+                      printf "\nSkipping '${file}'\n"
+                      skip=1
+                      break 3
+                      ;;
+              esac
+            done
+          done
         }
-    fi
+        break
+      }
+    done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
+
+    [ "${skip}" ] && continue
+    [ "${sync}" ] && {
+      [ "${fid}" ] && {
+        gdrive sync upload "${file}" ${fid}
+      }
+      continue
+    }
+    [ "${delete}" ] && {
+      [ "${fid}" ] && {
+        gdrive delete ${recursive} ${fid}
+      }
+    }
+
     gdrive upload ${recursive} --parent ${parentid} "${file}"
 done
