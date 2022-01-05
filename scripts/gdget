@@ -52,13 +52,13 @@ cd ${GDHOME}
 
 # TODO: getopts support for --force and other options
 
-for file in $*
+for file in "$@"
 do
   recursive=
-  pdir=`dirname ${file}`
-  base=`basename ${file}`
-  [ -f ${pdir}/.folderid ] || continue
-  parentid=`cat ${pdir}/.folderid`
+  pdir=`dirname "${file}"`
+  base=`basename "${file}"`
+  [ -f "${pdir}"/.folderid ] || continue
+  parentid=`cat "${pdir}"/.folderid`
   typ=
 
   while read match
@@ -79,11 +79,11 @@ do
     then
         recursive="--recursive"
     else
-        [ -f ${file} ] || {
+        [ -f "${file}" ] || {
             echo "$file does not exist in local directory. Skipping."
             continue
         }
     fi
-    gdrive download query --force --path ${pdir} \
-                          --query " name = '${base}' and parents in '${parentid}'"
+    gdrive download query --force --path "${pdir}" ${recursive} \
+                          " name = '${base}' and parents in '${parentid}'"
 done

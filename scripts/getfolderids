@@ -146,12 +146,12 @@ then
   FIDBULIST="${BU_DIR}/${prefix}_file_ids.txt"
   DIRBULIST="${BU_DIR}/${prefix}_folder_ids.txt"
   # Get the parent ID of the specified folder
-  base=`basename ${FOLDER}`
-  pdir=`dirname ${FOLDER}`
+  base=`basename "${FOLDER}"`
+  pdir=`dirname "${FOLDER}"`
   parentid=
   [ -f .folderid ] && parentid=`cat .folderid`
-  [ -f ${pdir}/.folderid ] && {
-    parentid=`cat ${pdir}/.folderid`
+  [ -f "${pdir}"/.folderid ] && {
+    parentid=`cat "${pdir}"/.folderid`
   }
   [ "${parentid}" ] || {
     echo "Cannot locate parent id"

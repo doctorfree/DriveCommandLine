@@ -90,14 +90,15 @@ folder="$1"
     echo "sync2drive requires a folder name as argument"
     usage
 }
-base=${folder}
+base="${folder}"
 echo ${folder} | grep '/' > /dev/null && {
-    base=`basename ${folder}`
+    base=`basename "${folder}"`
 }
 [ -d "${folder}" ] || {
     echo "Locating ${folder}"
     folder=
     foundnames=
+    numfound=0
     while read dirname
     do
       if [ "${foundnames}" ]
@@ -106,8 +107,8 @@ echo ${folder} | grep '/' > /dev/null && {
       else
         foundnames="${dirname}"
       fi
+      ((numfound+=1))
     done <<< `find . -type d -name "${base}"`
-    numfound=`echo ${foundnames} | wc -w`
     [ ${numfound} -eq 1 ] && folder=${foundnames}
     [ ${numfound} -gt 1 ] && {
       echo "Multiple folders named '${base}' exist in local directories."
@@ -125,14 +126,14 @@ echo ${folder} | grep '/' > /dev/null && {
     exit 1
 }
 
-[ -f ${folder}/.folderid ] || {
+[ -f "${folder}"/.folderid ] || {
     echo "No ${folder}/.folderid found"
     echo "Execute 'getfolderids' to populate folders with ids"
     echo "No sync performed. Exiting."
     exit 1
 }
 
-fid=`cat ${folder}/.folderid`
+fid=`cat "${folder}"/.folderid`
 
 # List syncable directories
 exists=

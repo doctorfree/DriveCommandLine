@@ -54,10 +54,10 @@ if [ $# -eq 0 ]
 then
     gdrive list --absolute --max 100 --name-width 0
 else
-    for folder in $*
+    for folder in "$@"
     do
-        [ -f ${folder}/.folderid ] || continue
-        FOLDERID=`cat ${folder}/.folderid`
+        [ -f "${folder}"/.folderid ] || continue
+        FOLDERID=`cat "${folder}"/.folderid`
         gdrive list --absolute --max 50 --name-width 0 \
                     --query " '${FOLDERID}' in parents"
     done

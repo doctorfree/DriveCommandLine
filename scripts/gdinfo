@@ -60,13 +60,13 @@ if [ $# -eq 0 ] || [ "$1" == "-u" ]
 then
   usage
 else
-  for name in $*
+  for name in "$@"
   do
     fid=
-    folder=`dirname ${name}`
+    folder=`dirname "${name}"`
     [ -f ${folder}/.folderid ] || continue
-    parentid=`cat ${folder}/.folderid`
-    base=`basename ${name}`
+    parentid=`cat "${folder}"/.folderid`
+    base=`basename "${name}"`
     while read match
     do
       thisID=`echo ${match} | awk ' { print $1 } '`

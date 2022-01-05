@@ -107,21 +107,21 @@ folder="$1"
     usage
 }
 
-base=${folder}
+base="${folder}"
 pdir=
 parentid=
 [ -f .folderid ] && parentid=`cat .folderid`
 echo "${folder}" | grep '/' > /dev/null && {
     # Get the parent folder ID
-    pdir=`dirname ${folder}`
-    [ -f ${pdir}/.folderid ] || {
+    pdir=`dirname "${folder}"`
+    [ -f "${pdir}"/.folderid ] || {
         echo "Cannot locate ${pdir}/.folderid"
         echo "Run 'getfolderids' to populate folders with folder ids"
         echo "Exiting without sync"
         exit 1
     }
-    base=`basename ${folder}`
-    parentid=`cat ${pdir}/.folderid`
+    base=`basename "${folder}"`
+    parentid=`cat "${pdir}"/.folderid`
 }
 [ "${parentid}" ] || {
     echo "Could not establish parent id."
@@ -153,7 +153,7 @@ done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${par
   then
     echo "gdrive mkdir --parent ${parentid} ${base} | awk ' { print FID } '"
   else
-    FID=`gdrive mkdir --parent ${parentid} ${base} | awk ' { print $2 } '`
+    FID=`gdrive mkdir --parent ${parentid} "${base}" | awk ' { print $2 } '`
   fi
 }
 
@@ -168,10 +168,10 @@ then
     fi
     if [ "${FID}" ]
     then
-        gdrive sync upload --dry-run ${delete} ${folder} ${FID}
+        gdrive sync upload --dry-run ${delete} "${folder}" ${FID}
     else
         echo "gdrive sync upload ${delete} ${folder} FID"
     fi
 else
-    gdrive sync upload ${delete} ${folder} ${FID}
+    gdrive sync upload ${delete} "${folder}" ${FID}
 fi

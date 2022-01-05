@@ -88,18 +88,18 @@ shift $(( OPTIND - 1 ))
   usage
 }
 
-for file in $*
+for file in "$@"
 do
-  base=${file}
+  base="${file}"
   dir=
   parentid=
   [ -f .folderid ] && parentid=`cat .folderid`
   [ "${splitpath}" ] && {
-    echo ${file} | grep '/' > /dev/null && {
-      base=`basename ${file}`
-      dir=`dirname ${file}`
-      [ -f ${dir}/.folderid ] && {
-        parentid=`cat ${dir}/.folderid`
+    echo "${file}" | grep '/' > /dev/null && {
+      base=`basename "${file}"`
+      dir=`dirname "${file}"`
+      [ -f "${dir}"/.folderid ] && {
+        parentid=`cat "${dir}"/.folderid`
       }
     }
   }
