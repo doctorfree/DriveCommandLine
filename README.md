@@ -35,9 +35,10 @@ documentation.
     1. [RPM Package installation](#rpm-package-installation)
     1. [Manual installation](#manual-installation)
     1. [Authentication and access](#authentication-and-access)
+1. [Documentation](#documentation)
 1. [Usage](#usage)
 1. [Examples](#examples)
-1. [Documentation](#documentation)
+1. [Limitations](#limitations)
 1. [Compile from source](#compile-from-source)
 
 ## Overview
@@ -66,7 +67,7 @@ gdrive is finally verified for using sensitive scopes which should fix the
 
 ## Prerequisites
 None, binaries are statically linked.
-If you want to compile from source you need the
+If you want to [compile from source](#compile-from-source) you need the
 [go toolchain](http://golang.org/doc/install) version 1.5 or higher.
 
 ## Installation
@@ -146,7 +147,61 @@ or set the environment variable `GDRIVE_CONFIG_DIR`.
 Example: `GDRIVE_CONFIG_DIR="/home/user/.gdrive-secondary" gdrive list`
 You will be prompted for a new verification code if the folder does not exist.
 
+## Documentation
+
+Many DriveCommandLine commands have manual pages. Execute `man <command-name>`
+to view the manual page for a command. Most commands also have help/usage messages
+that can be viewed with the **-u** argument option, e.g. `sync2drive -u`.
+
+Manual pages for these DriveCommandLine commands can be viewed by executing
+any of the following commands (click to view the man page online):
+
+- [man gdget](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdget.1.md)
+- [man gdinfo](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdinfo.1.md)
+- [man gdrm](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdrm.1.md)
+- [man gdupload](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdupload.1.md)
+- [man getfolderids](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/getfolderids.1.md)
+- [man sync2drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync2drive.1.md)
+- [man sync_from_drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync_from_drive.1.md)
+
 ## Usage
+
+To get started with DriveCommandLine management of Google Drive, invoke any of
+the DriveCommandLine wrapper scripts. These currently include:
+
+- `gdget` - download files/folders from Google Drive
+- `gdinfo` - get info on Google Drive files and folders
+- `gdlist` - list Google Drive files and folders
+- `gdrm` - remove Google Drive files and folders
+- `gdupload` - upload files and folders to Google Drive
+- `getfolderids` - retrieve Google Drive folder IDs and populate local folders with IDs
+- `sync2drive` - sync local files and folders to Google Drive (upload)
+- `sync_from_drive` - sync Google Drive files and folders to local storage (download)
+
+The initial invocation of a DriveCommandLine command will prompt to initialize
+gdrive home, providing the current working directory as the default. Either accept
+the default and use the current working directory as your gdrive home or enter
+a path to where you want to manage Google Drive locally. This location, the
+"gdrive home", is where local files and folders will be stored and where folder
+IDs will be maintained. It can be any folder, preferably not one with other
+unrelated work in it and a location with sufficient disk space for your
+Google Drive activity.
+
+Once the "gdrive home" has been set and stored in the file `~/.gdrive/gdhome`,
+recommended initialization is to execute the `getfolderids` command. This will
+populate your configured gdrive home with folders that mirror your Google Drive
+folders and folder IDs in the file `.folderid` in each of the mirrored folders.
+
+See the [Documentation section](#documentation) for links to the man pages
+for several of the DriveCommandLine commands.
+
+Most of the actions performed by the DriveCommandLine commands are carried out
+by the `gdrive` command. The DriveCommandLine commands simply act as a user
+friendly front-end to `gdrive`. All of these actions can be performed by directly
+invoking the `gdrive` command if you know the required command syntax and in
+many cases, the Google Drive file or folder ID. What follows is an in depth
+review of the `gdrive` command usage for those who wish to invoke it directly.
+
 ```
 gdrive [global] list [options]                                 List files
 gdrive [global] download [options] <fileId>                    Download file or directory
@@ -850,23 +905,27 @@ Id                             Path                             Type   Size     
 0B3X9GlR6EmbndmVMU05POGRPS3c   windows/gdrive-windows-x64.exe   bin    7.8 MB   2016-02-21 22:55:18
 ```
 
-## Documentation
+## Limitations
 
-Many DriveCommandLine commands have manual pages. Execute `man <command-name>`
-to view the manual page for a command. Most commands also have help/usage messages
-that can be viewed with the **-u** argument option, e.g. `sync2drive -u`.
+The initial release of DriveCommandLine includes only a few wrapper scripts.
+Future releases will expand the number and functionality of DriveCommandLine commands.
 
-Manual pages for these DriveCommandLine commands can be viewed by executing
-any of the following commands (click to view the man page online):
+The initial release of DriveCommandLine supports only a single Google Drive instance.
+Future releases will incorporate support for multiple Google Drive instances and
+switching between them.
 
-- [man gdinfo](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdinfo.1.md)
-- [man gdrm](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdrm.1.md)
-- [man getfolderids](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/getfolderids.1.md)
-- [man sync2drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync2drive.1.md)
-- [man sync_from_drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync_from_drive.1.md)
+Currently there is no support for Microsoft Windows platforms outside of the untested
+use of the Microsoft Linux subsystem.
 
 ## Compile from source
+
+If you want to [compile from source](#compile-from-source) you need the
+[go toolchain](http://golang.org/doc/install) version 1.5 or higher.
+
+To compile the `gdrive` binary and install it locally, issue the command:
+
 ```bash
-go get gitlab.com/doctorfree/DriveCommandLine
+go install github.com/prasmussen/gdrive@latest
 ```
+
 The gdrive binary should now be available at `$GOPATH/bin/gdrive`

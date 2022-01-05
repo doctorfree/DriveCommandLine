@@ -50,11 +50,40 @@ GHOM=${HOME}/.gdrive
 }
 cd ${GDHOME}
 
+# TODO: getopts support for --force and other options
+
 for file in $*
 do
-    dir=`dirname ${file}`
-    base=`basename ${file}`
-    cd ${dir}
-    echo "Uploading ${file}"
-    gdrive download query --query " name = '${base}'"
+  recursive=
+  pdir=`dirname ${file}`
+  base=`basename ${file}`
+  [ -f ${pdir}/.folderid ] || continue
+  parentid=`cat ${pdir}/.folderid`
+  typ=
+
+  while read match
+  do
+    id=`echo ${match} | awk ' { print $1 } '`
+    [ "${id}" ] || continue
+    path=`gdrive info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
+    # Remove leading and trailing spaces
+    path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    [ "${path}" == "${file}" ] && {
+      typ=`gdrive info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
+      typ="$(echo -e "${typ}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      echo ${typ} | grep folder > /dev/null && typ="dir"
+      break
+    }
+  done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
+    if [ "${typ}" == "dir" ]
+    then
+        recursive="--recursive"
+    else
+        [ -f ${file} ] || {
+            echo "$file does not exist in local directory. Skipping."
+            continue
+        }
+    fi
+    gdrive download query --force --path ${pdir} \
+                          --query " name = '${base}' and parents in '${parentid}'"
 done
