@@ -14,6 +14,7 @@ gdinst=`type -p gdrive`
 }
 
 GHOM=${HOME}/.gdrive
+GDOPTS="--no-header --absolute --max 100 --name-width 0"
 
 [ -f ${GHOM}/gdhome ] || {
     HERE=`pwd`
@@ -75,15 +76,13 @@ do
       break
     }
   done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
-    if [ "${typ}" == "dir" ]
-    then
-        recursive="--recursive"
-    else
-        [ -f "${file}" ] || {
-            echo "$file does not exist in local directory. Skipping."
-            continue
-        }
-    fi
+    [ "${typ}" ] || {
+      echo "No Google Drive file or folder '${file}' could be located"
+      echo "Perhaps it is owned by another user or it does not exist"
+      echo "Skipping download"
+      exit 1
+    }
+    [ "${typ}" == "dir" ] && recursive="--recursive"
     gdrive download query --force --path "${pdir}" ${recursive} \
                           " name = '${base}' and parents in '${parentid}'"
 done

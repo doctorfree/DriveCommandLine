@@ -61,7 +61,7 @@ do
         echo "Skipping upload of ${file}"
         continue
     }
-    parentid=`cat "${folder}"/.folderid`
+    parentid=`cat "${pdir}"/.folderid`
     while read match
     do
         syncid=`echo ${match} | awk ' { print $1 } '`
