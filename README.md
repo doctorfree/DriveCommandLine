@@ -36,6 +36,9 @@ documentation.
     1. [Manual installation](#manual-installation)
     1. [Authentication and access](#authentication-and-access)
 1. [Documentation](#documentation)
+1. [Motivation](#motivation)
+    1. [Why would I need or want command line control of Google Drive](#why-would-i-need-or-want-command-line-control-of-google-drive)
+    1. [Why would I need or want the DriveCommandLine wrappers](#why-would-i-need-or-want-the-drivecommandline-wrappers)
 1. [Usage](#usage)
 1. [Examples](#examples)
 1. [Limitations](#limitations)
@@ -163,6 +166,101 @@ any of the following commands (click to view the man page online):
 - [man getfolderids](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/getfolderids.1.md)
 - [man sync2drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync2drive.1.md)
 - [man sync_from_drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync_from_drive.1.md)
+
+## Motivation
+
+What are the benefits of command line control of Google Drive? Why would
+someone go to the trouble of installing the DriveCommandLine package?
+Let's examine these questions and propose some answers.
+
+### Why would I need or want command line control of Google Drive
+
+Google Drive provides an easy to use graphical user interface. There is
+a browser based user interface and Google Drive apps for most platforms.
+These work well enough and suffice for basic upload, download, and sync.
+
+Some users (mostly old propeller head codgers) are comfortable at the
+command line and prefer to use it over the tedious mouse clicks required
+to get anything done in a graphical user interface.
+Different lanes for different brains.
+
+Typically the most significant use case for command line control of anything
+is automation. For example, command line control of a service can be used to
+schedule uploads/downloads/sync/whatever triggered by some event - time of
+day or day of week or modified file/folder. But Google Drive for Desktop
+takes care of automated synchronization fairly well.
+
+With Google Drive, for me, the case for command line control is somewhat
+different than simple automation. Google Drive presents its own mysteries
+and difficulties. For example, scripted/programmatic downloads of files
+and folders require the knowledge of the file/folder ID in Google Drive.
+That is, Google Drive doesn't uniquely identify assets by name or path
+but by an id. The id can be obtained by examining the Google Drive share
+link and trimming off most of the url. That's a tedious operation if you
+have very many files you wish to add to a programmatic download. Further
+complicating matters, in Google Drive two unique and different files or
+folders can have the exact same path and name with different IDs.
+
+The primary case for command line control of Google Drive, for me, is the
+ability to script/program Google Drive actions. Yes, there is an API and
+one could employ the API but that requires significant effort and can be
+prone to error.
+[Petter Rasmussen's gdrive](https://github.com/prasmussen/gdrive)
+has already implemented an excellent command line Google Drive interface
+so why not just use that?
+
+Scripting Google Drive actions is especially useful when there are many
+files and folders to maintain. For example, if I need to publicly share
+several hundred files but privately hide some others in a folder, to do
+so manually in the Google Drive app or web interface is extremely tedious.
+I can perform this action quickly and easily with a scripted command line.
+
+For some, a good reason for command line control is simple convenience.
+If you spend a lot of time in a Shell environment then it is just easier
+to type a command that does what you would like than it is to switch windows,
+bring up a GUI, click a few times to find what you want, and click to
+get it done, then go back to your terminal window and Shell env.
+
+Finally, the command line interface and the associated Google Drive API
+can provide capabilities not available in the Google Drive GUI. Searching,
+listing, and filtering can be augmented by the plethora of tools available
+in a typical Shell environment. You can pipe the output of a `gdrive` command
+to grep, sed, awk, and other standard utilities to produce results unavailable
+in the GUI. That is, command line control along with the API and Shell
+utilities/builtins can extend the capabilities of the Google Drive file
+storage and synchronization service.
+
+### Why would I need or want the DriveCommandLine wrappers
+
+Ok, so now we are convinced command line control of Google Drive can be
+of benefit. What value, if any, do the DriveCommandLine wrapper scripts
+provide? Can't I just use the `gdrive` command with all its useful
+features and options? Why install this extra package?
+
+The DriveCommandLine package scripts provide significantly improved usage
+over direct invocation of `gdrive`. Many of the operations carried out by
+`gdrive` require the Google Drive file or folder ID as an argument to the
+command. Often the Google Drive user knows the name of the file/folder but
+seldom to we know its ID. We can discover it but it is tedious to do so.
+The DriveCommandLine commands wrap the `gdrive` command in a way that
+abstracts the Google Drive IDs of files and folders. They allow you to address
+your Google Drive files and folders by name and path rather than by ID.
+
+Furthermore, many `gdrive` commands require a query to identify the Google
+Drive asset(s) to act upon. These queries can be difficult to construct and
+prone to error. The DriveCommandLine utilities attempt to alleviate this
+requirement on the part of the user and construct the appropriate queries
+based upon the command line arguments and detected Google Drive IDs.
+
+Finally, the DriveCommandLine utilities not only wrap `gdrive` in a user
+friendly and protected manner but extend the capabilities of command line
+control of Google Drive. This is primarily accomplished by initializing
+a mirror of the user's Google Drive folders in local storage. Each mirrored
+local folder is populated with its Google Drive ID. These locally stored
+Google Drive IDs can be used to quickly and easily traverse a user's
+Google Drive and locate where and if actions should be performed. Other
+extensions such as detecting the potential for duplicate file or folder
+name creation in Google Drive are also implemented in DriveCommandLine.
 
 ## Usage
 
