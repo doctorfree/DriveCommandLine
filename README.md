@@ -61,14 +61,18 @@ the command line.
 The DriveCommandLine Debian and RPM format installation packages automate
 the installation and configuration process.
 
-Currently the DriveCommandLine control scripts include support for:
+Currently DriveCommandLine and control scripts include support for:
 
-- Creating folder IDs for each Google Drive folder or specified folders
+- Creating local folder IDs for each Google Drive folder or specified folders
 - Retrieving info on files or folders in Google Drive by file/folder name
 - Listing, downloading, uploading, and removing Google Drive files and folders
 - Syncing specified folders to Google Drive
 - Syncing from Google Drive
 - Retrieving Google Drive folder IDs
+- Creation and maintenance of Google Drive sync folders
+    - `sync2drive` and `gdupload` can create sync folders from existing non-empty Google Drive folders
+    - `sync2drive` and `gdupload` can upload to Google Drive sync folders without limitation
+- Unix style manual pages for all commands (see the [DriveCommandLine wiki](https://gitlab.com/doctorfree/DriveCommandLine/-/wikis/home).
 
 ## News
 #### 28.05.2021
@@ -202,6 +206,7 @@ any of the following commands (click to view the man page online):
 
 - [man gdget](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdget.1.md)
 - [man gdinfo](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdinfo.1.md)
+- [man gdlist](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdlist.1.md)
 - [man gdrm](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdrm.1.md)
 - [man gdupload](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdupload.1.md)
 - [man getfolderids](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/getfolderids.1.md)
