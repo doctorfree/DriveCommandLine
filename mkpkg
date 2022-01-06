@@ -95,15 +95,17 @@ ${SUDO} cp -a man "${OUT_DIR}/${TOP}/share/man"
 
 ${SUDO} chmod 755 ${OUT_DIR}/${LBIN}/*
 
+ARCH=`dpkg --print-architecture`
+
 cd dist
-echo "Building ${PKG_NAME}_${PKG_VER}-${PKG_REL} package"
-${SUDO} dpkg --build ${PKG_NAME}_${PKG_VER} ${PKG_NAME}_${PKG_VER}-${PKG_REL}.deb
+echo "Building ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH} package"
+${SUDO} dpkg --build ${PKG_NAME}_${PKG_VER} ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}.deb
 cd ${PKG_NAME}_${PKG_VER}
-echo "Creating compressed tar archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL} distribution"
-tar cf - usr | gzip -9 > ../${PKG_NAME}_${PKG_VER}-${PKG_REL}-dist.tar.gz
+echo "Creating compressed tar archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${ARCH} distribution"
+tar cf - usr | gzip -9 > ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}-dist.tar.gz
 [ "${GCI}" ] || {
-    echo "Creating zip archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL} distribution"
-    zip -q -r ../${PKG_NAME}_${PKG_VER}-${PKG_REL}-dist.zip usr
+    echo "Creating zip archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${ARCH} distribution"
+    zip -q -r ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}-dist.zip usr
 }
 cd ..
 

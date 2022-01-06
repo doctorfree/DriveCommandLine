@@ -86,7 +86,13 @@ else
   [ "${debian}" ] || [ -f /etc/debian_version ] && debian=1
 
   SUF=deb
-  [ "${debian}" ] || SUF=rpm
+  if [ "${debian}" ]
+  then
+    ARCH=`dpkg --print-architecture`
+  else
+    SUF=rpm
+    ARCH=`rpm --eval '%{_arch}'`
+  fi
 
   get_available_packages
 
@@ -145,18 +151,21 @@ else
 
   for PKG_NAME in ${PKG_NAMES}
   do
-    PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF}"
+    PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}.${SUF}"
     [ -f "${PKG}" ] || {
-      echo "${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF} not found."
-      for pkgs in ${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}
-      do
-        [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}" ] || {
-          echo "Found existing packages:"
-          echo "${pkgs}"
-        }
-      done
-      echo ""
-      continue
+      PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF}"
+      [ -f "${PKG}" ] || {
+        echo "${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF} not found."
+        for pkgs in ${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}
+        do
+          [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}" ] || {
+            echo "Found existing packages:"
+            echo "${pkgs}"
+          }
+        done
+        echo ""
+        continue
+      }
     }
 
     echo "Installing ${PKG}"
