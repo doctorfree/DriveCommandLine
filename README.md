@@ -36,6 +36,7 @@ documentation.
     1. [Manual installation](#manual-installation)
 1. [Initial Setup](#initial-setup)
     1. [Authentication and access](#authentication-and-access)
+    1. [DriveCommandLine GDHOME local storage location](drivecommandline-gdhome-local-storage-location)
 1. [Documentation](#documentation)
 1. [Motivation](#motivation)
     1. [Introduction to Using the Command Line](#introduction-to-using-the-command-line)
