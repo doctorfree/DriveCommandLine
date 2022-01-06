@@ -1061,6 +1061,23 @@ On CentOS 7 and RHEL 7:
 yum install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools
 ```
 
+Once you have the appropriate development environment installed you can create
+DriveCommandLine packages by cloning the repository and running `mkpkg`:
+
+```bash
+git clone https://gitlab.com/doctorfree/DriveCommandLine.git
+cd DriveCommandLine
+./mkpkg
+```
+
+The DriveCommandLine package can then be installed by executing the `Install` command:
+
+```bash
+./Install
+```
+
+and, similarly, removed by executing the `Uninstall` command.
+
 ### Cool feature used by this repository
 
 I am a GO fanboy but I was unaware of the ease with which GO builds and installs
