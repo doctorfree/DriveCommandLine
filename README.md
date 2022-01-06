@@ -37,6 +37,7 @@ documentation.
     1. [Authentication and access](#authentication-and-access)
 1. [Documentation](#documentation)
 1. [Motivation](#motivation)
+    1. [Introduction to Using the Command Line](#introduction-to-using-the-command-line)
     1. [Why would I need or want command line control of Google Drive](#why-would-i-need-or-want-command-line-control-of-google-drive)
     1. [Why would I need or want the DriveCommandLine wrappers](#why-would-i-need-or-want-the-drivecommandline-wrappers)
 1. [Usage](#usage)
@@ -170,9 +171,13 @@ any of the following commands (click to view the man page online):
 
 ## Motivation
 
-What are the benefits of command line control of Google Drive? Why would
-someone go to the trouble of installing the DriveCommandLine package?
-Let's examine these questions and propose some answers.
+### Introduction to Using the Command Line
+
+The command line has a long and storied history in computing. Read some of that
+history, learn how to open a command line terminal window on various systems,
+how to get started using the command line, and see some examples of why the command
+line interface is so powerful by reading the DriveCommandLine wiki article
+[Introduction to Using the Command Line](https://gitlab.com/doctorfree/DriveCommandLine/-/wikis/Introduction-to-Using-the-Command-Line).
 
 ### Why would I need or want command line control of Google Drive
 
