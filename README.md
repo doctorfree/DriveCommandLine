@@ -81,7 +81,19 @@ gdrive is finally verified for using sensitive scopes which should fix the
 `project-367116221053` when granting access to you account.
 
 ## Prerequisites
-None, binaries are statically linked.
+
+The DriveCommandLine utilities require `/bin/bash`, the Bash Shell, and
+standard Unix/Linux system utilities like `grep`, `sed`, and `awk`.
+These requirements are met by almost every Unix and Linux distribution.
+
+The `gdrive` binary has no prerequisites as it is statically linked.
+
+On almost all platforms there should be no prerequisite to running
+the DriveCommandLine utilities other than a network connected, standard
+operating system environment. It should even be possible to deploy
+one of the DriveCommandLine distribution archives on a Microsoft
+Windows platform under the Linux subsystem but this has not been tested.
+
 If you want to [compile from source](#compile-from-source) you need the
 [go toolchain](http://golang.org/doc/install) version 1.5 or higher.
 
@@ -91,16 +103,37 @@ DriveCommandLine can be installed on Linux systems using
 either the Debian packaging format or the Red Hat Package Manager (RPM).
 Other systems will require a manual installation described below.
 
-The `gdrive` binary is architecture specific. To determine which architecture
-installation package or archive to install, run the following command.
+The `gdrive` binary is operating system and architecture specific. To
+determine which OS/architecture installation package or archive to install,
+run the following commands.
+
+### Operating system
+
+`uname -o` should return an operating system name. On Linux systems this will
+usually be "GNU/Linux" while on Mac OS X it will be "Darwin". The distribution
+archives use the lower case operating system names of "linux" and "darwin".
+
+### Architecture
 
 On Debian based systems (Ubuntu Linux, etc):
 
-`dpkg --print-architecture`
+`dpkg --print-architecture` will return the native architecture.
 
 On RPM based systems (Redhat/CentOS/Fedora Linux, etc):
 
-`rpm --eval '%{_arch}'`
+`rpm --eval '%{_arch}'` will return the native architecture.
+
+On Mac OS X the GO architectures supported do not match those returned by
+the standard system commands. Go figure. To find your architecture on a Mac
+execute the `uname -m` command. If it returns something like "x86_64" then
+use the "darwin_amd64" DriveCommandLine distribution archive. If it returns
+something with "arm" in the architecture then use the "darwin_arm64"
+distribution archive.
+
+DriveCommandLine distribution archives exist for a wide variety of operating
+system platforms and architectures. If it is not clear what distribution
+archive is targeted for your platform then raise an issue at
+https://gitlab.com/doctorfree/DriveCommandLine/-/issues
 
 ### Debian package installation
 
