@@ -68,7 +68,7 @@ otherwise using GDUPLOAD and for a DISCLAIMER OF ALL WARRANTIES.
 Submit bug reports online at: &lt;https://gitlab.com/doctorfree/DriveCommandLine/issues&gt;
 
 # SEE ALSO
-**gdget**(1), **gdinfo**(1), **gdrm**(1), **getfolderids**(1), **sync2drive**(1), **sync_from_drive**(1)
+**gdget**(1), **gdinfo**(1), **gdlist**(1), **gdrm**(1), **getfolderids**(1), **sync2drive**(1), **sync_from_drive**(1)
 
 Full documentation and sources at: &lt;https://gitlab.com/doctorfree/DriveCommandLine&gt;
 

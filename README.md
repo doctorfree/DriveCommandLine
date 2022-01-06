@@ -45,7 +45,7 @@ documentation.
 1. [Usage](#usage)
     1.  [Getting started](#getting-started)
     1.  [Direct invocation of gdrive](#direct-invocation-of-gdrive)
-        1. [Synopsis of gdrive command](#synopsis-of-gdrive-command)
+    1. [Synopsis of gdrive command](#synopsis-of-gdrive-command)
     1. [Synopsis of DriveCommandLine commands](#synopsis-of-drivecommandline-commands)
     1. [Examples](#examples)
 1. [Limitations](#limitations)
@@ -368,7 +368,7 @@ and example usage of the `gdrive` command is available in the
 [DriveCommandLine wiki man page for gdrive](https://gitlab.com/doctorfree/DriveCommandLine/-/wikis/gdrive.1). The gdrive man page is also available via the
 `man` command by executing the command `man gdrive`.
 
-#### Synopsis of gdrive command
+### Synopsis of gdrive command
 
 ```
 gdrive [global] list [options]                                 List files
@@ -413,39 +413,19 @@ executing the command `man <command-name>`, e.g. `man gdinfo`.
 
 #### Get files
 ```
-**gdget** [ **-d** ] [ **-f** ] [ **-n** ] [ **-r** ] [ **-s** ] [ **-p**  path] [ **-o** ] [ **-u** ] path/to/fileorfolder [file2 ...]
-: Where 'path/to/file' or 'path/to/folder' are names of a Google Drive file or folder
+gdget [-d] [-f] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]
 
 options:
-**-n**
-: indicates tell me what you would do but don't do it
-
-**-d**
-: indicates delete remote file when download is successful
-
-**-f**
-: indicates force overwrite of existing file
-
-**-p** 'path'
-: specifies a download path
-
-**-o**
-: indicates write file content to stdout
-
-**-r**
-: indicates download directory and its contents recursively
-
-**-s**
-: indicates skip existing files
-
-**-u**
-: displays this usage message
-
-path/to/filename
-: download Google Drive file `filename` to local folder `path/to`
-
-path/to/foldername
-: download Google Drive folder `foldername` and its contents to local folder `path/to`
+  -n                    Indicates tell me what you would do but don't do it
+  -d                    Indicates delete remote file when download is successful
+  -f                    Indicates force overwrite of existing file
+  -p <path>             Specifies a download path
+  -o                    Indicates write file content to stdout
+  -r                    Indicates download directory and its contents recursively
+  -s                    Indicates skip existing files
+  -u                    Displays this usage message
+  path/to/filename      Download Google Drive file `filename` to local folder `path/to`
+  path/to/foldername    Download Google Drive folder `foldername` and its contents to local folder `path/to`
 ```
 
 #### List files
@@ -453,7 +433,7 @@ path/to/foldername
 gdlist [-m maxfiles] [-u] [path/to/folder]
 
 options:
-  -m, <maxfiles>             Max files to list, default: 100
+  -m <maxfiles>              Max files to list, default: 100
   -u                         Display a usage message and exit
   path/to/folder             Path of folder to list. If none provided, list all
 ```
