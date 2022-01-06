@@ -9,7 +9,7 @@ date: January 04, 2022
 **sync2drive** - Sync a Google Drive folder and its contents with the locally stored folder
 
 # SYNOPSIS
-**sync2drive** [ **-k** ] [ **-l** ] [ **-m** maxfiles ] [ **-n** ] [ **-s** ] [ **-u** ] folder|path/to/folder
+**sync2drive** [ **-k** ] [ **-l** ] [ **-p** ] [ **-m** maxfiles ] [ **-n** ] [ **-s** ] [ **-u** ] folder|path/to/folder
 : Where 'folder' or 'path/to/folder' is the name of a Google Drive folder
 
 # DESCRIPTION
@@ -42,6 +42,9 @@ upload to an existing sync folder.
 
 **-l**
 : indicates list sync folders and exit
+
+**-p**
+: indicates list sync folders and display path and shared status"
 
 **-m** 'maxfiles'
 : specifies maximum number of file ids to return (default: 100)

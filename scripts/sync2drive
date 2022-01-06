@@ -58,6 +58,7 @@ usage() {
   printf "\nWhere:"
   printf "\n\t-k indicates do not delete extraneous remote files"
   printf "\n\t-l indicates list sync folders and exit"
+  printf "\n\t-p indicates list sync folders and display path and shared status"
   printf "\n\t-m 'maxfiles' specifies maximum number of file ids to return"
   printf "\n\t\t(default: 100)"
   printf "\n\t-n indicates tell me what you would do but don't do it"
@@ -69,13 +70,46 @@ usage() {
 
 maxfiles=100
 delete="--delete-extraneous"
-while getopts "klm:nsu" flag; do
+while getopts "klm:npsu" flag; do
     case $flag in
         k)
             delete=
             ;;
         l)
             gdrive sync list
+            exit 0
+            ;;
+        p)
+            printf "\nId                                  Name\t\t\tCreated\t\tShared"
+            while read syncfolder
+            do
+                thisID=`echo ${syncfolder} | awk ' { print $1 } '`
+                [ "${thisID}" ] || continue
+                path=`gdrive info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
+                path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                date=`gdrive info ${thisID} | grep ^Created: | awk -F ':' ' { print $2 } '`
+                date="$(echo -e "${date}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                shared=`gdrive info ${thisID} | grep ^Shared: | awk -F ':' ' { print $2 } '`
+                shared="$(echo -e "${shared}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                pathsize=`echo ${path} | wc -c`
+                if [ ${pathsize} -lt 8 ]
+                then
+                  printf "\n${thisID}   ${path}\t\t\t\t${date}\t${shared}"
+                else
+                  if [ ${pathsize} -lt 16 ]
+                  then
+                    printf "\n${thisID}   ${path}\t\t\t${date}\t${shared}"
+                  else
+                    if [ ${pathsize} -lt 20 ]
+                    then
+                      printf "\n${thisID}   ${path}\t\t${date}\t${shared}"
+                    else
+                      printf "\n${thisID}   ${path}\t${date}\t${shared}"
+                    fi
+                  fi
+                fi
+            done <<< `gdrive sync list --no-header`
+            printf "\n"
             exit 0
             ;;
         m)
