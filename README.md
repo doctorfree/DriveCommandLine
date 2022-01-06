@@ -91,6 +91,17 @@ DriveCommandLine can be installed on Linux systems using
 either the Debian packaging format or the Red Hat Package Manager (RPM).
 Other systems will require a manual installation described below.
 
+The `gdrive` binary is architecture specific. To determine which architecture
+installation package or archive to install, run the following command.
+
+On Debian based systems (Ubuntu Linux, etc):
+
+`dpkg --print-architecture`
+
+On RPM based systems (Redhat/CentOS/Fedora Linux, etc):
+
+`rpm --eval '%{_arch}'`
+
 ### Debian package installation
 
 Many Linux distributions, most notably Ubuntu and its derivatives, use the
