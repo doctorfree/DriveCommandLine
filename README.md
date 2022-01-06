@@ -414,24 +414,13 @@ available for the DriveCommandLine commands. Additional info on each command
 is available in the
 [DriveCommandLine wiki](https://gitlab.com/doctorfree/DriveCommandLine/-/wikis/home).
 Each command also has a manual page available via the `man` command by
-executing the command `man <command-name>`, e.g. `man gdinfo`.
+executing the command:
 
-#### Get files
-```
-gdget [-d] [-f] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]
+`man <command-name>`
 
-options:
-  -n                    Indicates tell me what you would do but don't do it
-  -d                    Indicates delete remote file when download is successful
-  -f                    Indicates force overwrite of existing file
-  -p <path>             Specifies a download path
-  -o                    Indicates write file content to stdout
-  -r                    Indicates download directory and its contents recursively
-  -s                    Indicates skip existing files
-  -u                    Displays this usage message
-  path/to/filename      Download Google Drive file `filename` to local folder `path/to`
-  path/to/foldername    Download Google Drive folder `foldername` and its contents to local folder `path/to`
-```
+For example, to view the manual page for the *gdinfo* command, execute:
+
+`man gdinfo`.
 
 #### Get files
 ```
@@ -446,7 +435,7 @@ options:
   -r                         Indicates download directory and its contents recursively
   -s                         Indicates skip existing files
   -u                         Display a usage message and exit
-  path/to/fileorfolder       Path of folder to get
+  path/to/fileorfolder       Path of file or folder to get
 ```
 
 #### File/folder info
@@ -503,6 +492,32 @@ options:
   path/to/folder       Path of folder to populate with Google Drive IDs
 ```
 
+#### Create/update a Google Drive sync folder
+```
+sync2drive [-k] [-l] [-m maxfiles] [-n] [-s] [-u] folder|path/to/folder
+
+options:
+  -k                   Indicates do not delete extraneous remote files
+  -l                   Indicates list sync folders and exit
+  -p                   Indicates list sync folders and display path and shared status
+  -m 'maxfiles'        Specifies maximum number of file ids to return (default: 100)
+  -n                   Indicates tell me what you would do but don't do it
+  -s                   Indicates do not split path to identify name (useful when there is a slash in the folder name)
+  -u                   Display a usage message and exit
+  path/to/folder       Path of folder to sync
+```
+
+#### Sync a local folder with a previously created Google Drive sync folder
+```
+sync_from_drive [-l] [-n] [-u] folder | path/to/folder
+
+options:
+  -n                   Indicates tell me what you would do but don't do it
+  -l                   Indicates list sync folders and exit
+  -u                   Display a usage message and exit
+  path/to/folder       Path of file or folder to upload
+```
+
 ### Examples
 #### Retrieve and populate local folders with Google Drive IDs
 `getfolderids MagicMirror`
@@ -542,6 +557,26 @@ Lists up to 1000 Google Drive files and folders
 `gdlist MagicMirror`
 
 Lists the Google Drive files and folders in the 'MagicMirror' folder
+
+#### Create/update Google Drive sync folder
+
+`sync2drive MagicMirror`
+
+Syncs the local folder `MagicMirror` and its contents to the Google Drive folder `MagicMirror`
+
+`sync2drive MagicMirror/config`
+
+Syncs the local folder `MagicMirror/config` and its contents to the Google Drive folder `MagicMirror/config`
+
+#### Sync local folder to Google Drive sync folder
+
+`sync_from_drive MagicMirror`
+
+Syncs the local folder `MagicMirror` and its contents to the Google Drive folder `MagicMirror`
+
+`sync_from_drive MagicMirror/config`
+
+Syncs the local folder `MagicMirror/config` and its contents to the Google Drive folder `MagicMirror/config`
 
 ## Limitations
 
