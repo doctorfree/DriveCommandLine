@@ -76,7 +76,7 @@ ${SUDO} cp scripts/* ${OUT_DIR}/${LBIN}
 # go get gitlab.com/doctorfree/DriveCommandLine
 [ -d ${HOME}/go ] || mkdir -p ${HOME}/go
 [ -d ${HOME}/go/bin ] || mkdir -p ${HOME}/go/bin
-go install github.com/prasmussen/gdrive@latest
+go install github.com/prasmussen/gdrive@latest > /dev/null 2>&1
 if [ "${GOPATH}" ]
 then
     [ -f ${GOPATH}/bin/gdrive ] && ${SUDO} cp ${GOPATH}/bin/gdrive ${OUT_DIR}/${LBIN}
