@@ -34,6 +34,7 @@ documentation.
     1. [Debian Package installation](#debian-package-installation)
     1. [RPM Package installation](#rpm-package-installation)
     1. [Manual installation](#manual-installation)
+1. [Initial Setup](#initial-setup)
     1. [Authentication and access](#authentication-and-access)
 1. [Documentation](#documentation)
 1. [Motivation](#motivation)
@@ -139,6 +140,13 @@ cd /
 tar xzf /path/to/downloaded/DriveCommandLine_2.1.1-1-dist.tar.gz
 ```
 
+## Initial Setup
+
+After installing DriveCommandLine it is necessary to perform a couple
+of one-time initialization setup tasks. The `gdrive` app must be given
+access rights to Google Drive and the DriveCommandLine utilities need
+to know where the local Google Drive storage folders reside.
+
 ### Authentication and access
 
 The first time gdrive is launched (i.e. run `gdrive about` in your
@@ -151,6 +159,32 @@ If you want to manage multiple drives you can use the global `--config` flag
 or set the environment variable `GDRIVE_CONFIG_DIR`.
 Example: `GDRIVE_CONFIG_DIR="/home/user/.gdrive-secondary" gdrive list`
 You will be prompted for a new verification code if the folder does not exist.
+
+### DriveCommandLine GDHOME local storage location
+
+The DriveCommandLine utilities use the environment variable **GDHOME**
+to access the locally stored mirror of the Google Drive they manage.
+This variable is set in the file `$HOME/.gdrive/gdhome`
+
+To initialize this setting, if it was not done during the installation of
+the DriveCommandLine package, simply execute any of the DriveCommandLine
+utilities. If this variable has not previously been configured, the utility
+will prompt you for a path to your local Google Drive storage. For example,
+execute the command `gdlist`. If no GDHOME has been set the command will
+prompt you to Initialize gdrive home to the current working directory.
+If that is where you wish to maintain local Google Drive storage then
+enter 'y' or 'Y'. If you prefer another location for local storage then
+enter 'n' or 'N' and you will be prompted to "Enter your gdrive home".
+Enter the full absolute path to your gdrive home and your GDHOME will
+be configured in `$HOME/.gdrive/gdhome`.
+
+These two initialization steps need only be performed once, prior to first
+use of the system. Subsequent invocations of `gdrive` or the DriveCommandLine
+utilities should not require further initialization unless you wish to
+change the location of your local storage or the authentication token expires.
+
+Once you have initialized DriveCommandLine you can populate your local storage
+folder with Google Drive folder IDs by running the `getfolderids` command.
 
 ## Documentation
 
@@ -298,10 +332,14 @@ IDs will be maintained. It can be any folder, preferably not one with other
 unrelated work in it and a location with sufficient disk space for your
 Google Drive activity.
 
-Once the "gdrive home" has been set and stored in the file `~/.gdrive/gdhome`,
-recommended initialization is to execute the `getfolderids` command. This will
-populate your configured gdrive home with folders that mirror your Google Drive
-folders and folder IDs in the file `.folderid` in each of the mirrored folders.
+Once the "gdrive home" has been set and stored in the file `~/.gdrive/gdhome`
+and `gdrive` has been authenticated and access granted (see the section on
+[Authentication and access](#authentication-and-access)), initialize the local
+Google Drive storage home by executing the `getfolderids` command.
+
+This will populate your configured gdrive home with folders that mirror your
+Google Drive folders and folder IDs in the file `.folderid` in each of the
+mirrored folders.
 
 See the [Documentation section](#documentation) for links to the man pages
 for several of the DriveCommandLine commands.
