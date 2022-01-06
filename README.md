@@ -72,7 +72,7 @@ Currently DriveCommandLine and control scripts include support for:
 - Creation and maintenance of Google Drive sync folders
     - `sync2drive` and `gdupload` can create sync folders from existing non-empty Google Drive folders
     - `sync2drive` and `gdupload` can upload to Google Drive sync folders without limitation
-- Unix style manual pages for all commands (see the [DriveCommandLine wiki](https://gitlab.com/doctorfree/DriveCommandLine/-/wikis/home).
+- Unix style manual pages for all commands (see the [DriveCommandLine wiki](https://gitlab.com/doctorfree/DriveCommandLine/-/wikis/home))
 
 ## News
 #### 28.05.2021
@@ -433,43 +433,115 @@ options:
   path/to/foldername    Download Google Drive folder `foldername` and its contents to local folder `path/to`
 ```
 
+#### Get files
+```
+gdget [-d] [-f] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]
+
+options:
+  -d                         Indicates delete remote file when download is successful
+  -f                         Indicates force overwrite of existing file
+  -n                         Indicates tell me what you would do but don't do it
+  -o                         Indicates write file content to stdout
+  -p 'path'                  Specifies a download path
+  -r                         Indicates download directory and its contents recursively
+  -s                         Indicates skip existing files
+  -u                         Display a usage message and exit
+  path/to/fileorfolder       Path of folder to get
+```
+
+#### File/folder info
+```
+gdinfo [-i id] [-u] path/to/fileorfolder [file2 ...]
+
+options:
+  -u                         Display a usage message and exit
+  -i 'id'                    Specifies a Google Drive ID to retrieve for info
+  path/to/fileorfolder       Path of file or folder to get info
+```
+
 #### List files
 ```
 gdlist [-m maxfiles] [-u] [path/to/folder]
 
 options:
-  -m <maxfiles>              Max files to list, default: 100
+  -m 'maxfiles'              Max files to list, default: 100
   -u                         Display a usage message and exit
   path/to/folder             Path of folder to list. If none provided, list all
 ```
 
+#### Remove files or folders
+```
+gdrm [-n] [-r] [-s] [-u] path/to/fileorfolder [file2 ...]
+
+options:
+  -n                         Indicates tell me what you would do but don't do it
+  -r                         Indicates remove directory and its contents recursively
+  -s                         Indicates do not split path to identify name (useful when there is a slash in the filename)
+  -u                         Display a usage message and exit
+  path/to/fileorfolder       Path of file or folder to remove
+```
+
+#### Upload files or folders
+```
+gdupload [-u] path/to/fileorfolder [fileorfolder2 ...]
+
+options:
+  -u                         Display a usage message and exit
+  path/to/fileorfolder       Path of file or folder to upload
+```
+
+#### Retrieve and populate folder IDs
+```
+getfolderids [-f] [-m maxfiles] [-n] [-u] [-v] [path/to/folder]
+
+options:
+  -f                   Indicates 'files', also create a list of file IDs (slower)
+  -m 'maxfiles'        Specifies the maximum number of files in query return (default: 500)
+  -n                   Indicates tell me what you would do but don't do it
+  -v                   Indicates verbose mode
+  -u                   Display a usage message and exit
+  path/to/folder       Path of folder to populate with Google Drive IDs
+```
+
 ### Examples
+#### Retrieve and populate local folders with Google Drive IDs
+`getfolderids MagicMirror`
+
+Retrieve and populate folder IDs in the 'MagicMirror' folder and all subfolders within
+
 #### Get files
-**gdget README**
-: downloads top-level Google Drive file `README`
+`gdget README`
 
-**gdget -o README | grep AUTHOR**
-: downloads top-level Google Drive file `README` to stdout and pipes that to the `grep` utility
+Downloads top-level Google Drive file `README`
 
-**gdget foo/bar**
-: downloads Google Drive folder `bar` located in folder `foo` and downloads all its contents recursively
+`gdget -o README | grep AUTHOR`
 
-**gdget foo/bar/spam**
-: downloads Google Drive file `spam` located in folder `foo/bar`
+Downloads top-level Google Drive file `README` to stdout and pipes that to the `grep` utility
 
-**gdget -p tmp foo/bar/spam**
-: downloads Google Drive file `spam` located in Google Drive folder `foo/bar` to local folder 'tmp'
+`gdget foo/bar`
+
+Downloads Google Drive folder `bar` located in folder `foo` and downloads all its contents recursively
+
+`gdget foo/bar/spam`
+
+Downloads Google Drive file `spam` located in folder `foo/bar`
+
+`gdget -p tmp foo/bar/spam`
+
+Downloads Google Drive file `spam` located in Google Drive folder `foo/bar` to local folder 'tmp'
 
 #### List files
-```
-$ gdlist
-Id                             Name                    Type   Size     Created
-0B3X9GlR6EmbnZ3gyeGw4d3ozbUk   drive-windows-x64.exe   bin    6.6 MB   2015-07-18 16:43:58
-0B3X9GlR6EmbnTXlSc1FqV1dvSTQ   drive-windows-386.exe   bin    5.2 MB   2015-07-18 16:43:53
-0B3X9GlR6EmbnVjIzMDRqck1aekE   drive-osx-x64           bin    6.5 MB   2015-07-18 16:43:50
-0B3X9GlR6EmbnbEpXdlhza25zT1U   drive-osx-386           bin    5.2 MB   2015-07-18 16:43:41
-0B3X9GlR6Embnb095MGxEYmJhY2c   drive-linux-x64         bin    6.5 MB   2015-07-18 16:43:38
-```
+`gdlist`
+
+Lists all Google Drive files and folders up to the default maximum number
+
+`gdlist -m 1000`
+
+Lists up to 1000 Google Drive files and folders
+
+`gdlist MagicMirror`
+
+Lists the Google Drive files and folders in the 'MagicMirror' folder
 
 ## Limitations
 
