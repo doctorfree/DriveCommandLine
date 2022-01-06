@@ -7,7 +7,7 @@
 \f[B]gdupload\f[R] - upload local files and folders to Google Drive
 .SH SYNOPSIS
 .TP
-\f[B]gdupload\f[R] path/to/fileorfolder [file2 ...]
+\f[B]gdupload\f[R] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
 Where \[aq]path/to/file\[aq] or \[aq]path/to/folder\[aq] are names of a
 local file or folder
 .SH DESCRIPTION
@@ -16,7 +16,33 @@ The \f[I]gdupload\f[R] command uploads the specified local files and
 folders to Google Drive.
 If the argument is a folder then it and its contents are uploaded
 recursively.
+.PP
+In order to avoid the creation of multiple Google Drive folders with the
+same name and path, if \f[I]gdupload\f[R] detects an existing Google
+Drive folder with the same name as would be uploaded then it prompts the
+user to select an option for the upload, offering the following choices:
+.IP \[bu] 2
+\[dq]Preserve Existing Folder and Create Sync Folder\[dq]
+.IP \[bu] 2
+\[dq]Delete Existing Folder and Upload New\[dq]
+.IP \[bu] 2
+\[dq]Create New Duplicate Folder Name\[dq]
+.IP \[bu] 2
+\[dq]Skip Upload\[dq]
+.PP
+Files that are synced to google drive with \f[I]sync2drive\f[R] are
+tagged with an \f[C]appProperty\f[R] so that the files on Google Drive
+can be traversed faster.
+This means that you cannot upload files with \f[C]gdrive upload\f[R]
+into a sync directory as the files would be missing the sync tag, and
+would be ignored by the sync commands.
+However, this limitation is overcome (optionally) when the
+DriveCommandLine utility \f[C]gdupload\f[R] is used to upload to an
+existing sync folder.
 .SH COMMAND LINE OPTIONS
+.TP
+\f[B]-u\f[R]
+display a usage message
 .TP
 path/to/filename
 upload local file \f[C]filename\f[R] to Google Drive folder
@@ -52,7 +78,9 @@ Submit bug reports online at:
 <<https://gitlab.com/doctorfree/DriveCommandLine/issues>>
 .SH SEE ALSO
 .PP
-\f[B]gdlist\f[R](1)
+\f[B]gdget\f[R](1), \f[B]gdinfo\f[R](1), \f[B]gdrm\f[R](1),
+\f[B]getfolderids\f[R](1), \f[B]sync2drive\f[R](1),
+\f[B]sync_from_drive\f[R](1)
 .PP
 Full documentation and sources at:
 <<https://gitlab.com/doctorfree/DriveCommandLine>>

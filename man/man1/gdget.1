@@ -7,17 +7,40 @@
 \f[B]gdget\f[R] - download Google Drive files or folders
 .SH SYNOPSIS
 .TP
-\f[B]gdget\f[R] path/to/fileorfolder [file2 ...]
+\f[B]gdget\f[R] [ \f[B]-d\f[R] ] [ \f[B]-f\f[R] ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-p\f[R] path] [ \f[B]-o\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
 Where \[aq]path/to/file\[aq] or \[aq]path/to/folder\[aq] are names of a
 Google Drive file or folder
 .SH DESCRIPTION
 .PP
 The \f[I]gdget\f[R] command downloads the specified Google Drive files
 and folders from Google Drive.
-If the argument is a folder on Google Drive then it and its contents are
-downloaded recursively.
-Local files and folders, if they exist, are overwritten.
+If the \[aq]file/folder\[aq] argument is a folder on Google Drive then
+it and its contents are downloaded recursively.
 .SH COMMAND LINE OPTIONS
+.TP
+\f[B]-n\f[R]
+indicates tell me what you would do but don\[aq]t do it
+.TP
+\f[B]-d\f[R]
+indicates delete remote file when download is successful
+.TP
+\f[B]-f\f[R]
+indicates force overwrite of existing file
+.TP
+\f[B]-p\f[R] \[aq]path\[aq]
+specifies a download path
+.TP
+\f[B]-o\f[R]
+indicates write file content to stdout
+.TP
+\f[B]-r\f[R]
+indicates download directory and its contents recursively
+.TP
+\f[B]-s\f[R]
+indicates skip existing files
+.TP
+\f[B]-u\f[R]
+displays this usage message
 .TP
 path/to/filename
 download Google Drive file \f[C]filename\f[R] to local folder
@@ -31,13 +54,21 @@ local folder \f[C]path/to\f[R]
 \f[B]gdget README\f[R]
 downloads top-level Google Drive file \f[C]README\f[R]
 .TP
+\f[B]gdget -o README | grep AUTHOR\f[R]
+downloads top-level Google Drive file \f[C]README\f[R] to stdout and
+pipes that to the \f[C]grep\f[R] utility
+.TP
+\f[B]gdget foo/bar\f[R]
+downloads Google Drive folder \f[C]bar\f[R] located in folder
+\f[C]foo\f[R] and downloads all its contents recursively
+.TP
 \f[B]gdget foo/bar/spam\f[R]
 downloads Google Drive file \f[C]spam\f[R] located in folder
 \f[C]foo/bar\f[R]
 .TP
-\f[B]gdget foo/bar/spam\f[R]
-downloads Google Drive folder \f[C]spam\f[R] located in folder
-\f[C]foo/bar\f[R] and downloads all its contents recursively
+\f[B]gdget -p tmp foo/bar/spam\f[R]
+downloads Google Drive file \f[C]spam\f[R] located in Google Drive
+folder \f[C]foo/bar\f[R] to local folder \[aq]tmp\[aq]
 .SH AUTHORS
 .PP
 Written by Ronald Record <<github@ronrecord.com>>
@@ -53,7 +84,9 @@ Submit bug reports online at:
 <<https://gitlab.com/doctorfree/DriveCommandLine/issues>>
 .SH SEE ALSO
 .PP
-\f[B]gdlist\f[R](1)
+\f[B]gdinfo\f[R](1), \f[B]gdrm\f[R](1), \f[B]gdupload\f[R](1),
+\f[B]getfolderids\f[R](1), \f[B]sync2drive\f[R](1),
+\f[B]sync_from_drive\f[R](1)
 .PP
 Full documentation and sources at:
 <<https://gitlab.com/doctorfree/DriveCommandLine>>

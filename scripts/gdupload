@@ -50,6 +50,11 @@ GHOM=${HOME}/.gdrive
 }
 cd ${GDHOME}
 
+[ $# -eq 0 ] || [ "$1" == "-u" ] && {
+    echo "Usage: gdupload [-u] path/to/fileorfolder [fileorfolder2 ...]"
+    exit 1
+}
+
 for file in "$@"
 do
     recursive=
@@ -111,49 +116,53 @@ do
         typ=`gdrive info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
         typ="$(echo -e "${typ}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
         echo ${typ} | grep folder > /dev/null && typ="dir"
-        [ "${typ}" == "dir" ] && {
-          echo "A Google Drive folder '${file}' already exists."
-          echo "Uploading '${file}' would create a new folder with the same name"
-          echo "and a different Google Drive ID."
-          while true
-          do
-            PS3="${BOLD}Please enter your desire (numeric or text): ${NORMAL}"
-            options=("Preserve Existing Folder and Create Sync Folder" "Delete Existing Folder and Upload New" "Create New Duplicate Folder Name" "Skip '${file}' Upload")
-            select opt in "${options[@]}"
-            do
-              case "$opt,$REPLY" in
-                  "Preserve"*,*|*,"Preserve"*)
-                      printf "\nCreating Sync folder '${file}'\n"
-                      sync=1
-                      break 3
-                      ;;
-                  "Delete"*,*|*,"Delete"*)
-                      printf "\nDeleting existing folder and uploading '${file}'\n"
-                      delete=1
-                      break 3
-                      ;;
-                  "Create"*,*|*,"Create"*)
-                      printf "\nCreating duplicate folder name '${file}'\n"
-                      break 3
-                      ;;
-                  "Skip"*,*|*,"Skip"*|"skip"*,*|*,"skip"*)
-                      printf "\nSkipping '${file}'\n"
-                      skip=1
-                      break 3
-                      ;;
-              esac
-            done
-          done
-        }
         break
       }
     done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
 
+    [ "${typ}" == "dir" ] && {
+      echo "A Google Drive folder '${file}' already exists."
+      echo "Uploading '${file}' would create a new folder"
+      echo "with the same name and a different Google Drive ID."
+      echo ""
+      while true
+      do
+        PS3="${BOLD}Please enter your desire (numeric): ${NORMAL}"
+        options=("Preserve Existing Folder and Create Sync Folder" "Delete Existing Folder and Upload New" "Create New Duplicate Folder Name" "Skip Upload")
+        select opt in "${options[@]}"
+        do
+          case "$opt,$REPLY" in
+            "Preserve Existing Folder and Create Sync Folder",*|*,"Preserve Existing Folder and Create Sync Folder")
+              printf "\nCreating Sync folder '${file}'\n"
+              sync=1
+              break 2
+              ;;
+            "Delete Existing Folder and Upload New",*|*,"Delete Existing Folder and Upload New")
+              printf "\nDeleting existing folder and uploading '${file}'\n"
+              delete=1
+              break 2
+              ;;
+            "Create New Duplicate Folder Name",*|*,"Create New Duplicate Folder Name")
+              printf "\nCreating duplicate folder name '${file}'\n"
+              break 2
+              ;;
+            "Skip Upload",*|*,"Skip Upload")
+              printf "\nSkipping '${file}'\n"
+              skip=1
+              break 2
+              ;;
+            *,*)
+              printf "\nInvalid selection. Please enter the number of your choice.\n"
+              break
+              ;;
+          esac
+        done
+      done
+    }
+
     [ "${skip}" ] && continue
     [ "${sync}" ] && {
-      [ "${fid}" ] && {
-        gdrive sync upload "${file}" ${fid}
-      }
+      sync2drive "${file}"
       continue
     }
     [ "${delete}" ] && {
@@ -163,4 +172,8 @@ do
     }
 
     gdrive upload ${recursive} --parent ${parentid} "${file}"
+    [ "${typ}" == "dir" ] && {
+      # Get the folder IDs of this folder and its subfolders
+      getfolderids "${file}"
+    }
 done

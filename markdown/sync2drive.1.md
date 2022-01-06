@@ -6,14 +6,14 @@ footer: sync2drive 2.1.1
 date: January 04, 2022
 ---
 # NAME
-**sync2drive** - Sync a Google Drive folder and its contents to the locally stored folder
+**sync2drive** - Sync a Google Drive folder and its contents with the locally stored folder
 
 # SYNOPSIS
 **sync2drive** [ **-k** ] [ **-l** ] [ **-m** maxfiles ] [ **-n** ] [ **-s** ] [ **-u** ] folder|path/to/folder
 : Where 'folder' or 'path/to/folder' is the name of a Google Drive folder
 
 # DESCRIPTION
-The *sync2drive* command syncs a Google Drive folder and its contents to the
+The *sync2drive* command syncs a Google Drive folder and its contents with the
 locally stored folder of the same name/path. Files and folders stored locally
 are uploaded to Google Drive if they differ or are new. Extraneous files stored
 on Google Drive in the specified folder and its subfolders are removed.
@@ -23,11 +23,18 @@ changes to this folder and its contents can be sync'd back to the local folder
 using the *sync_from_drive* command. In addition, changes made locally can be
 synchronized again by reissuing the *sync2drive* command.
 
+Unlike Google Drive and the `gdrive` command, the DriveCommandLine commands
+enable the creation of a Google Drive sync folder to an existing non-empty
+Google Drive folder. In this case, the contents of the local sync folder
+and the Google Drive folder to be sync'd are combined.
+
 Files that are synced to google drive with *sync2drive* are tagged with an
 `appProperty` so that the files on Google Drive can be traversed faster.
 This means that you cannot upload files with `gdrive upload` into
 a sync directory as the files would be missing the sync tag, and would be
-ignored by the sync commands.
+ignored by the sync commands. However, this limitation is overcome
+(optionally) when the DriveCommandLine utility `gdupload` is used to
+upload to an existing sync folder.
 
 # COMMAND LINE OPTIONS
 **-k**
@@ -71,7 +78,7 @@ otherwise using SYNC2DRIVE and for a DISCLAIMER OF ALL WARRANTIES.
 Submit bug reports online at: &lt;https://gitlab.com/doctorfree/DriveCommandLine/issues&gt;
 
 # SEE ALSO
-**sync_from_drive**(1)
+**gdget**(1), **gdinfo**(1), **gdrm**(1), **gdupload**(1), **getfolderids**(1), **sync_from_drive**(1)
 
 Full documentation and sources at: &lt;https://gitlab.com/doctorfree/DriveCommandLine&gt;
 

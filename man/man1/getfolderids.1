@@ -8,7 +8,7 @@
 Drive for the specified folder and its subfolders
 .SH SYNOPSIS
 .TP
-\f[B]getfolderids\f[R] [ \f[B]-f\f[R] ] [ \f[B]-m\f[R] maxfiles ] [ \f[B]-n\f[R] ] [ \f[B]-u\f[R] ] [path/to/folder]
+\f[B]getfolderids\f[R] [ \f[B]-f\f[R] ] [ \f[B]-m\f[R] maxfiles ] [ \f[B]-n\f[R] ] [ \f[B]-u\f[R] ] [ \f[B]-v\f[R] ] [path/to/folder]
 Where \[aq]path/to/folder\[aq] is the (optional) name of a Google Drive
 folder.
 If no folder is specified then all Google Drive folders are searched and
@@ -35,6 +35,9 @@ specifies the maximum number of files in query return (default: 500)
 .TP
 \f[B]-n\f[R]
 indicates tell me what you would do but don\[aq]t do it
+.TP
+\f[B]-v\f[R]
+indicates verbose mode
 .TP
 foldername
 recursively retrieve folder IDs for Google Drive folder
@@ -71,7 +74,9 @@ Submit bug reports online at:
 <<https://gitlab.com/doctorfree/DriveCommandLine/issues>>
 .SH SEE ALSO
 .PP
-\f[B]gdlist\f[R](1)
+\f[B]gdget\f[R](1), \f[B]gdinfo\f[R](1), \f[B]gdrm\f[R](1),
+\f[B]gdupload\f[R](1), \f[B]sync2drive\f[R](1),
+\f[B]sync_from_drive\f[R](1)
 .PP
 Full documentation and sources at:
 <<https://gitlab.com/doctorfree/DriveCommandLine>>

@@ -4,7 +4,7 @@
 .hy
 .SH NAME
 .PP
-\f[B]sync2drive\f[R] - Sync a Google Drive folder and its contents to
+\f[B]sync2drive\f[R] - Sync a Google Drive folder and its contents with
 the locally stored folder
 .SH SYNOPSIS
 .TP
@@ -14,7 +14,7 @@ Google Drive folder
 .SH DESCRIPTION
 .PP
 The \f[I]sync2drive\f[R] command syncs a Google Drive folder and its
-contents to the locally stored folder of the same name/path.
+contents with the locally stored folder of the same name/path.
 Files and folders stored locally are uploaded to Google Drive if they
 differ or are new.
 Extraneous files stored on Google Drive in the specified folder and its
@@ -27,12 +27,21 @@ back to the local folder using the \f[I]sync_from_drive\f[R] command.
 In addition, changes made locally can be synchronized again by reissuing
 the \f[I]sync2drive\f[R] command.
 .PP
+Unlike Google Drive and the \f[C]gdrive\f[R] command, the
+DriveCommandLine commands enable the creation of a Google Drive sync
+folder to an existing non-empty Google Drive folder.
+In this case, the contents of the local sync folder and the Google Drive
+folder to be sync\[aq]d are combined.
+.PP
 Files that are synced to google drive with \f[I]sync2drive\f[R] are
 tagged with an \f[C]appProperty\f[R] so that the files on Google Drive
 can be traversed faster.
 This means that you cannot upload files with \f[C]gdrive upload\f[R]
 into a sync directory as the files would be missing the sync tag, and
 would be ignored by the sync commands.
+However, this limitation is overcome (optionally) when the
+DriveCommandLine utility \f[C]gdupload\f[R] is used to upload to an
+existing sync folder.
 .SH COMMAND LINE OPTIONS
 .TP
 \f[B]-k\f[R]
@@ -81,6 +90,8 @@ Submit bug reports online at:
 <<https://gitlab.com/doctorfree/DriveCommandLine/issues>>
 .SH SEE ALSO
 .PP
+\f[B]gdget\f[R](1), \f[B]gdinfo\f[R](1), \f[B]gdrm\f[R](1),
+\f[B]gdupload\f[R](1), \f[B]getfolderids\f[R](1),
 \f[B]sync_from_drive\f[R](1)
 .PP
 Full documentation and sources at:

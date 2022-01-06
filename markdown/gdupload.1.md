@@ -9,7 +9,7 @@ date: January 04, 2022
 **gdupload** - upload local files and folders to Google Drive
 
 # SYNOPSIS
-**gdupload** path/to/fileorfolder [file2 ...]
+**gdupload** [ **-u** ] path/to/fileorfolder [file2 ...]
 : Where 'path/to/file' or 'path/to/folder' are names of a local file or folder
 
 # DESCRIPTION
@@ -17,7 +17,28 @@ The *gdupload* command uploads the specified local files and folders
 to Google Drive. If the argument is a folder then it and its contents
 are uploaded recursively.
 
+In order to avoid the creation of multiple Google Drive folders with the
+same name and path, if *gdupload* detects an existing Google Drive folder
+with the same name as would be uploaded then it prompts the user to
+select an option for the upload, offering the following choices:
+
+- "Preserve Existing Folder and Create Sync Folder"
+- "Delete Existing Folder and Upload New"
+- "Create New Duplicate Folder Name"
+- "Skip Upload"
+
+Files that are synced to google drive with *sync2drive* are tagged with an
+`appProperty` so that the files on Google Drive can be traversed faster.
+This means that you cannot upload files with `gdrive upload` into
+a sync directory as the files would be missing the sync tag, and would be
+ignored by the sync commands. However, this limitation is overcome
+(optionally) when the DriveCommandLine utility `gdupload` is used to
+upload to an existing sync folder.
+
 # COMMAND LINE OPTIONS
+**-u**
+: display a usage message
+
 path/to/filename
 : upload local file `filename` to Google Drive folder `path/to`
 
@@ -47,7 +68,7 @@ otherwise using GDUPLOAD and for a DISCLAIMER OF ALL WARRANTIES.
 Submit bug reports online at: &lt;https://gitlab.com/doctorfree/DriveCommandLine/issues&gt;
 
 # SEE ALSO
-**gdlist**(1)
+**gdget**(1), **gdinfo**(1), **gdrm**(1), **getfolderids**(1), **sync2drive**(1), **sync_from_drive**(1)
 
 Full documentation and sources at: &lt;https://gitlab.com/doctorfree/DriveCommandLine&gt;
 

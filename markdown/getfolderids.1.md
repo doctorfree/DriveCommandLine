@@ -9,7 +9,7 @@ date: January 04, 2022
 **getfolderids** - recursively retrieve folder IDs from Google Drive for the specified folder and its subfolders
 
 # SYNOPSIS
-**getfolderids** [ **-f** ] [ **-m** maxfiles ] [ **-n** ] [ **-u** ] [path/to/folder]
+**getfolderids** [ **-f** ] [ **-m** maxfiles ] [ **-n** ] [ **-u** ] [ **-v** ] [path/to/folder]
 : Where 'path/to/folder' is the (optional) name of a Google Drive folder. If no folder is specified then all Google Drive folders are searched and their folder IDs returned.
 
 # DESCRIPTION
@@ -30,6 +30,9 @@ populated with their folder IDs in the file `.folderid` in each folder.
 
 **-n**
 : indicates tell me what you would do but don't do it
+
+**-v**
+: indicates verbose mode
 
 foldername
 : recursively retrieve folder IDs for Google Drive folder 'foldername' and its subfolders
@@ -60,7 +63,7 @@ otherwise using GETFOLDERIDS and for a DISCLAIMER OF ALL WARRANTIES.
 Submit bug reports online at: &lt;https://gitlab.com/doctorfree/DriveCommandLine/issues&gt;
 
 # SEE ALSO
-**gdlist**(1)
+**gdget**(1), **gdinfo**(1), **gdrm**(1), **gdupload**(1), **sync2drive**(1), **sync_from_drive**(1)
 
 Full documentation and sources at: &lt;https://gitlab.com/doctorfree/DriveCommandLine&gt;
 

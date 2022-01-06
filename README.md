@@ -247,6 +247,13 @@ The DriveCommandLine commands wrap the `gdrive` command in a way that
 abstracts the Google Drive IDs of files and folders. They allow you to address
 your Google Drive files and folders by name and path rather than by ID.
 
+DriveCommandLine commands get around some of the irritating "features"
+of Google Drive in a safe and secure manner. For example, Google Drive
+and, by extension, the `gdrive` command, will not create a sync folder
+for an existing non-empty Google Drive folder. The DriveCommandLine commands
+`sync2drive` and `gdupload` overcome this limitation and enable the creation
+of sync folders to existing non-empty Google Drive folders wihout losing content.
+
 Furthermore, many `gdrive` commands require a query to identify the Google
 Drive asset(s) to act upon. These queries can be difficult to construct and
 prone to error. The DriveCommandLine utilities attempt to alleviate this
@@ -298,8 +305,12 @@ Most of the actions performed by the DriveCommandLine commands are carried out
 by the `gdrive` command. The DriveCommandLine commands simply act as a user
 friendly front-end to `gdrive`. All of these actions can be performed by directly
 invoking the `gdrive` command if you know the required command syntax and in
-many cases, the Google Drive file or folder ID. What follows is an in depth
-review of the `gdrive` command usage for those who wish to invoke it directly.
+many cases, the Google Drive file or folder ID.
+
+The DriveCommandLine utilities do not yet implement every feature and option
+supported in `gdrive`. It may on occasion be necessary to invoke `gdrive`
+directly to accomplish a task. What follows is an in depth review of the
+`gdrive` command usage for those who wish to invoke it directly.
 
 ```
 gdrive [global] list [options]                                 List files

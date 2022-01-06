@@ -66,18 +66,20 @@ cd ${GDHOME}
 ID_DIR="${GDHOME}/drive_ids"
 BU_DIR="${GDHOME}/Bak/drive_ids"
 
-TELL=
 ONLY=1
+TELL=
+VERB=
 maxfiles=500
 
 usage() {
-  printf "\nUsage: getfolderids [-f] [-m maxfiles] [-n] [-u] [path/to/folder]"
+  printf "\nUsage: getfolderids [-f] [-m maxfiles] [-n] [-u] [-v] [path/to/folder]"
   printf "\nWhere:"
   printf "\n\t-f indicates 'files', also create a list of file IDs (slower)\n"
   printf "\n\t-m 'maxfiles' specifies the maximum number of files in query return"
   printf "\n\t\t(default: 500)"
   printf "\n\t-n indicates tell me what you would do but don't do it"
-  printf "\n\t-u displays this usage message\n"
+  printf "\n\t-u displays this usage message"
+  printf "\n\t-v indicates verbose mode\n"
   printf "\nIn the absence of a 'path/to/folder' getfolderids will retrieve"
   printf "\nand populate all local folders with folder IDs.\n"
   printf "\nIf a 'path/to/folder' argument is provided then getfolderids will retrieve"
@@ -88,7 +90,7 @@ usage() {
   exit 1
 }
 
-while getopts "fm:nu" flag; do
+while getopts "fm:nuv" flag; do
     case $flag in
         f)
             ONLY=
@@ -101,6 +103,9 @@ while getopts "fm:nu" flag; do
             ;;
         u)
             usage
+            ;;
+        v)
+            VERB=1
             ;;
     esac
 done
@@ -170,7 +175,7 @@ then
     [ "${thisPath}" == "${FOLDER}" ] && {
       exists=${thisID}
       TOPID=${exists}
-      echo "Set top folder ID to ${TOPID}"
+      [ "${VERB}" ] && echo "Set top folder ID to ${TOPID}"
       if [ "${TELL}" ]
       then
         echo "Would add folder id '${FOLDER}/.folderid'"
@@ -203,9 +208,11 @@ else
   touch ${DIRLIST}
 fi
 
-echo "Creating local folder IDs stored in 'path/to/folder/.folderid'"
-echo "Depending on the number of files and folders currently stored in Google Drive,"
-echo "this process can be time consuming. Please be patient."
+[ "${VERB}" ] && {
+  echo "Creating local folder IDs stored in 'path/to/folder/.folderid'"
+  echo "Depending on the number of files and folders currently stored in Google Drive,"
+  echo "this process can be time consuming. Please be patient."
+}
 
 getids() {
   while read entry
