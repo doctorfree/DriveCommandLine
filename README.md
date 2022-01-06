@@ -107,11 +107,11 @@ package from the
 Install the DriveCommandLine package by executing the command
 
 ```bash
-sudo apt install ./DriveCommandLine_<version>-<release>.deb
+sudo apt install ./DriveCommandLine_<version>-<release>.<arch>.deb
 ```
 or
 ```console
-sudo dpkg -i ./DriveCommandLine_<version>-<release>.deb
+sudo dpkg -i ./DriveCommandLine_<version>-<release>.<arch>.deb
 ```
 
 ### RPM package installation
@@ -127,11 +127,11 @@ package from the
 Install the DriveCommandLine package by executing the command
 
 ```bash
-sudo yum localinstall ./DriveCommandLine_<version>-<release>.rpm
+sudo yum localinstall ./DriveCommandLine_<version>-<release>.<arch>.rpm
 ```
 or
 ```console
-sudo rpm -i ./DriveCommandLine_<version>-<release>.rpm
+sudo rpm -i ./DriveCommandLine_<version>-<release>.<arch>.rpm
 ```
 
 ### Manual installation
@@ -141,12 +141,12 @@ from the latest
 [DriveCommandLine Releases](https://gitlab.com/doctorfree/DriveCommandLine/-/releases).
 
 As root, extract the archive from the root directory. For example, to install
-from the gzip'd tar archive:
+from a gzip'd tar archive:
 
 ```bash
 sudo -i
 cd /
-tar xzf /path/to/downloaded/DriveCommandLine_2.1.1-1-dist.tar.gz
+tar xzf /path/to/downloaded/DriveCommandLine_<version>-<release>.<arch>-dist.tar.gz
 ```
 
 ## Initial setup
@@ -545,6 +545,15 @@ Downloads Google Drive file `spam` located in folder `foo/bar`
 
 Downloads Google Drive file `spam` located in Google Drive folder `foo/bar` to local folder 'tmp'
 
+#### Get file or folder info
+`gdinfo README`
+
+Displays information for the top-level Google Drive file `README`
+
+`gdinfo foo/bar/spam`
+
+Displays information for the Google Drive file `spam` located in folder `foo/bar`
+
 #### List files
 `gdlist`
 
@@ -557,6 +566,32 @@ Lists up to 1000 Google Drive files and folders
 `gdlist MagicMirror`
 
 Lists the Google Drive files and folders in the 'MagicMirror' folder
+
+#### Remove Google Drive files or folders
+`gdrm README`
+
+Removes top-level Google Drive file `README`
+
+`gdrm foo/bar/spam`
+
+Removes Google Drive file `spam` located in folder `foo/bar`
+
+`gdrm -r foo/bar/spam`
+
+Removes Google Drive folder `spam` located in folder `foo/bar` and removes all its contents recursively
+
+#### Upload files and folders to Google Drive
+`gdupload README`
+
+Uploads local file `README` to top-level Google Drive folder
+
+`gdupload foo/bar/spam`
+
+Uploads local file `spam` located in folder `foo/bar` to Google Drive folder `foo/bar`
+
+`gdupload foo/bar/spam`
+
+Uploads local folder `spam` located in folder `foo/bar` and uploads all its contents recursively
 
 #### Create/update Google Drive sync folder
 
