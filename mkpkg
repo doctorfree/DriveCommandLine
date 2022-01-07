@@ -48,21 +48,6 @@ mkdir ${OUT_DIR}
 mkdir ${OUT_DIR}/DEBIAN
 chmod 755 ${OUT_DIR} ${OUT_DIR}/DEBIAN
 
-echo "Package: ${PKG}
-Version: ${PKG_VER}-${PKG_REL}
-Section: misc
-Priority: optional
-Architecture: amd64
-Depends:
-Suggests:
-Maintainer: ${DEBFULLNAME} <${DEBEMAIL}>
-Build-Depends: debhelper (>= 11)
-Standards-Version: 4.1.3
-Homepage: https://gitlab.com/doctorfree/DriveCommandLine
-Description: Google Drive Command Line Tools
- Manage your Google Drive from the command line" > ${OUT_DIR}/DEBIAN/control
-chmod 644 ${OUT_DIR}/DEBIAN/control
-
 for dir in "${TOP}" "${DESTDIR}" "${LBIN}" "${TOP}/share" \
             "${TOP}/share/doc" "${TOP}/share/doc/${PKG}"
 do
@@ -76,13 +61,10 @@ ${SUDO} cp scripts/* ${OUT_DIR}/${LBIN}
 # go get gitlab.com/doctorfree/DriveCommandLine
 [ -d ${HOME}/go ] || mkdir -p ${HOME}/go
 [ -d ${HOME}/go/bin ] || mkdir -p ${HOME}/go/bin
-go install github.com/prasmussen/gdrive@latest > /dev/null 2>&1
-if [ "${GOPATH}" ]
-then
-    [ -f ${GOPATH}/bin/gdrive ] && ${SUDO} cp ${GOPATH}/bin/gdrive ${OUT_DIR}/${LBIN}
-else
-    [ -f ${HOME}/go/bin/gdrive ] && ${SUDO} cp ${HOME}/go/bin/gdrive ${OUT_DIR}/${LBIN}
-fi
+# go install github.com/prasmussen/gdrive@latest > /dev/null 2>&1
+# Build all the gdrive binaries
+[ -d releases ] || mkdir releases
+bin/build-all.sh "${SRC}/${SRC_NAME}"
 
 ${SUDO} cp AUTHORS ${OUT_DIR}/${TOP}/share/doc/${PKG}/AUTHORS
 ${SUDO} cp LICENSE ${OUT_DIR}/${TOP}/share/doc/${PKG}/copyright
@@ -95,53 +77,84 @@ ${SUDO} cp -a man "${OUT_DIR}/${TOP}/share/man"
 
 ${SUDO} chmod 755 ${OUT_DIR}/${LBIN}/*
 
-ARCH=`dpkg --print-architecture`
+for platforms in releases/bin/*
+do
+  platform=`basename ${platforms}`
+  OPSM=`echo ${platform} | awk -F '_' ' { print $1 } '`
+  ARCH=`echo ${platform} | awk -F '_' ' { print $2 } '`
+  echo "Creating ${platform} distribution"
 
-cd dist
-echo "Building ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH} package"
-${SUDO} dpkg --build ${PKG_NAME}_${PKG_VER} ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}.deb
-cd ${PKG_NAME}_${PKG_VER}
-echo "Creating compressed tar archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${ARCH} distribution"
-tar cf - usr | gzip -9 > ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}-dist.tar.gz
-[ "${GCI}" ] || {
-    echo "Creating zip archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${ARCH} distribution"
-    zip -q -r ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}-dist.zip usr
-}
-cd ..
+  # Remove any os/architecture specific gdrive binary from the dist tree
+  ${SUDO} rm -f ${OUT_DIR}/${LBIN}/gdrive*
+  # Copy the os/architecture specific gdrive binary into place
+  ${SUDO} cp ${platforms}/gdrive* ${OUT_DIR}/${LBIN}
 
-[ "${GCI}" ] || {
-    [ -d ../releases ] || mkdir ../releases
-    [ -d ../releases/${PKG_VER} ] || mkdir ../releases/${PKG_VER}
-    ${SUDO} cp *.deb *.gz *.zip ../releases/${PKG_VER}
-}
+  [ "${OPSM}" == "linux" ] && {
+    echo "Building Debian and RPM packages for ${platform}"
+    # If Linux then build Debian and RPM packages
+    echo "Package: ${PKG}
+Version: ${PKG_VER}-${PKG_REL}
+Section: misc
+Priority: optional
+Architecture: ${ARCH}
+Depends:
+Suggests:
+Maintainer: ${DEBFULLNAME} <${DEBEMAIL}>
+Build-Depends: debhelper (>= 11)
+Standards-Version: 4.1.3
+Homepage: https://gitlab.com/doctorfree/DriveCommandLine
+Description: Google Drive Command Line Tools
+ Manage your Google Drive from the command line" > ${OUT_DIR}/DEBIAN/control
+    chmod 644 ${OUT_DIR}/DEBIAN/control
 
-# Experimental RPM distribution build
-cd "${SRC}/${SRC_NAME}"
-[ -d rpm ] && cp -a rpm ${OUT_DIR}/rpm
-[ -d ${OUT_DIR}/rpm ] || mkdir ${OUT_DIR}/rpm
+    cd dist
+    echo "Building ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH} package"
+    ${SUDO} dpkg --build ${PKG_NAME}_${PKG_VER} ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}.deb
 
-have_rpm=`type -p rpmbuild`
-[ "${have_rpm}" ] || {
-  ${SUDO} apt-get update
-  ${SUDO} apt-get install rpm -y
-}
+    [ "${GCI}" ] || {
+      [ -d ../releases ] || mkdir ../releases
+      [ -d ../releases/${PKG_VER} ] || mkdir ../releases/${PKG_VER}
+      ${SUDO} cp *.deb *.gz *.zip ../releases/${PKG_VER}
+    }
 
-[ -d ${OUT_DIR}/BUILDROOT ] || ${SUDO} mkdir -p ${OUT_DIR}/BUILDROOT
-[ -d ${OUT_DIR}/BUILDROOT/usr ] && ${SUDO} rm -rf ${OUT_DIR}/BUILDROOT/usr
-${SUDO} cp -a ${OUT_DIR}/usr ${OUT_DIR}/BUILDROOT/usr
+    # Experimental RPM distribution build
+    cd "${SRC}/${SRC_NAME}"
+    [ -d rpm ] && cp -a rpm ${OUT_DIR}/rpm
+    [ -d ${OUT_DIR}/rpm ] || mkdir ${OUT_DIR}/rpm
 
-${SUDO} rpmbuild -ba --build-in-place \
-   --define "_topdir ${OUT_DIR}" \
-   --define "_version ${PKG_VER}" \
-   --define "_release ${PKG_REL}" \
-   --define "_sourcedir ${OUT_DIR}" \
-   --buildroot ${SRC}/${SRC_NAME}/${OUT_DIR}/BUILDROOT \
-   ${OUT_DIR}/rpm/${PKG_NAME}.spec
+    have_rpm=`type -p rpmbuild`
+    [ "${have_rpm}" ] || {
+      ${SUDO} apt-get update
+      ${SUDO} apt-get install rpm -y
+    }
 
-${SUDO} cp dist/${PKG_NAME}_${PKG_VER}/RPMS/*/*.rpm dist
+    [ -d ${OUT_DIR}/BUILDROOT ] || ${SUDO} mkdir -p ${OUT_DIR}/BUILDROOT
+    [ -d ${OUT_DIR}/BUILDROOT/usr ] && ${SUDO} rm -rf ${OUT_DIR}/BUILDROOT/usr
+    ${SUDO} cp -a ${OUT_DIR}/usr ${OUT_DIR}/BUILDROOT/usr
 
-[ "${GCI}" ] || {
-    [ -d releases ] || mkdir releases
-    [ -d releases/${PKG_VER} ] || mkdir releases/${PKG_VER}
-    ${SUDO} cp ${OUT_DIR}/RPMS/*/*.rpm releases/${PKG_VER}
-}
+    ${SUDO} rpmbuild -ba --build-in-place --target ${ARCH} \
+       --define "_topdir ${OUT_DIR}" \
+       --define "_version ${PKG_VER}" \
+       --define "_release ${PKG_REL}" \
+       --define "_sourcedir ${OUT_DIR}" \
+       --buildroot ${SRC}/${SRC_NAME}/${OUT_DIR}/BUILDROOT \
+       ${OUT_DIR}/rpm/${PKG_NAME}.spec
+
+    ${SUDO} cp dist/${PKG_NAME}_${PKG_VER}/RPMS/*/*.rpm dist
+
+    [ "${GCI}" ] || {
+      [ -d releases ] || mkdir releases
+      [ -d releases/${PKG_VER} ] || mkdir releases/${PKG_VER}
+      ${SUDO} cp ${OUT_DIR}/RPMS/*/*.rpm releases/${PKG_VER}
+    }
+  }
+
+  cd "${SRC}/${SRC_NAME}/dist/${PKG_NAME}_${PKG_VER}"
+  echo "Creating compressed tar archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${platform} distribution"
+  tar cf - usr | gzip -9 > ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}-dist.tar.gz
+  [ "${GCI}" ] || {
+    echo "Creating zip archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${platform} distribution"
+    zip -q -r ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}-dist.zip usr
+  }
+  cd "${SRC}/${SRC_NAME}"
+done
