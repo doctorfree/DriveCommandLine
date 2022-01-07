@@ -64,8 +64,8 @@ while getopts "c:u" flag; do
         c)
             GHOM="${OPTARG}"
             export GDRIVE="gdrive --config ${OPTARG}"
-            export SYNC2DRIVE="sync2drive --config ${OPTARG}"
-            export GETFOLDERIDS="getfolderids --config ${OPTARG}"
+            export SYNC2DRIVE="sync2drive -c ${OPTARG}"
+            export GETFOLDERIDS="getfolderids -c ${OPTARG}"
             ;;
         u)
             usage

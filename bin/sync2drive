@@ -78,7 +78,7 @@ while getopts "c:klm:npsu" flag; do
         c)
             GHOM="${OPTARG}"
             export GDRIVE="gdrive --config ${OPTARG}"
-            export GDGET="gdget --config ${OPTARG}"
+            export GDGET="gdget -c ${OPTARG}"
             ;;
         k)
             delete=
