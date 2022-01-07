@@ -55,13 +55,9 @@ do
     ${SUDO} chown root:root ${OUT_DIR}/${dir}
 done
 
-${SUDO} cp scripts/* ${OUT_DIR}/${LBIN}
+# Copy in the DriveCommandLine scripts
+${SUDO} cp bin/* ${OUT_DIR}/${LBIN}
 
-# Install gdrive binary
-# go get gitlab.com/doctorfree/DriveCommandLine
-[ -d ${HOME}/go ] || mkdir -p ${HOME}/go
-[ -d ${HOME}/go/bin ] || mkdir -p ${HOME}/go/bin
-# go install github.com/prasmussen/gdrive@latest > /dev/null 2>&1
 # Build all the gdrive binaries
 [ -d releases ] || mkdir releases
 bin/build-all.sh "${SRC}/${SRC_NAME}"
@@ -108,8 +104,8 @@ Description: Google Drive Command Line Tools
     chmod 644 ${OUT_DIR}/DEBIAN/control
 
     cd dist
-    echo "Building ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH} package"
-    ${SUDO} dpkg --build ${PKG_NAME}_${PKG_VER} ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}.deb
+    echo "Building ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform} package"
+    ${SUDO} dpkg --build ${PKG_NAME}_${PKG_VER} ${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}.deb
 
     [ "${GCI}" ] || {
       [ -d ../releases ] || mkdir ../releases
@@ -132,7 +128,7 @@ Description: Google Drive Command Line Tools
     [ -d ${OUT_DIR}/BUILDROOT/usr ] && ${SUDO} rm -rf ${OUT_DIR}/BUILDROOT/usr
     ${SUDO} cp -a ${OUT_DIR}/usr ${OUT_DIR}/BUILDROOT/usr
 
-    ${SUDO} rpmbuild -ba --build-in-place --target ${ARCH} \
+    ${SUDO} rpmbuild -ba --build-in-place --target "${ARCH}-unknown-${OPSM}" \
        --define "_topdir ${OUT_DIR}" \
        --define "_version ${PKG_VER}" \
        --define "_release ${PKG_REL}" \
