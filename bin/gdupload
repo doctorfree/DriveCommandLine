@@ -57,11 +57,15 @@ usage() {
 }
 
 export GDRIVE=gdrive
+export SYNC2DRIVE=sync2drive
+export GETFOLDERIDS=getfolderids
 while getopts "c:u" flag; do
     case $flag in
         c)
             GHOM="${OPTARG}"
             export GDRIVE="gdrive --config ${OPTARG}"
+            export SYNC2DRIVE="sync2drive --config ${OPTARG}"
+            export GETFOLDERIDS="getfolderids --config ${OPTARG}"
             ;;
         u)
             usage
@@ -113,7 +117,7 @@ do
       echo "${pdir} is a sync folder."
       echo "Currently files and directories cannot be uploaded to sync folders."
       echo "Place the desired uploads in the local ${pdir} folder"
-      echo "and run 'sync2drive ${pdir}'"
+      echo "and run '${SYNC2DRIVE} ${pdir}'"
       continue
     }
 
@@ -181,7 +185,7 @@ do
 
     [ "${skip}" ] && continue
     [ "${sync}" ] && {
-      sync2drive "${file}"
+      ${SYNC2DRIVE} "${file}"
       continue
     }
     [ "${delete}" ] && {
@@ -193,6 +197,6 @@ do
     ${GDRIVE} upload ${recursive} --parent ${parentid} "${file}"
     [ "${typ}" == "dir" ] && {
       # Get the folder IDs of this folder and its subfolders
-      getfolderids "${file}"
+      ${GETFOLDERIDS} "${file}"
     }
 done

@@ -117,51 +117,107 @@ while getopts "c:dfp:norsu" flag; do
 done
 shift $(( OPTIND - 1 ))
 
+SDIR=`pwd`
 get_gdhome
 
+# In the absence of a file or folder argument, get the current working dir
+[ "$1" ] || set -- '.' "$@"
 for file in "$@"
 do
-  recursive=
-  pdir=`dirname "${file}"`
-  base=`basename "${file}"`
+  topdir=
+  if [ "${file}" == "." ]
+  then
+    if [ "${SDIR}" == "${GDHOME}" ]
+    then
+      topdir=1
+      pdir="."
+    else
+      base=`basename "${SDIR}"`
+      pdir=`dirname "${SDIR}"`
+    fi
+  else
+    pdir=`dirname "${file}"`
+    base=`basename "${file}"`
+  fi
   [ -f "${pdir}"/.folderid ] || continue
   parentid=`cat "${pdir}"/.folderid`
   typ=
 
-  while read match
-  do
-    id=`echo ${match} | awk ' { print $1 } '`
-    [ "${id}" ] || continue
-    path=`${GDRIVE} info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
-    # Remove leading and trailing spaces
-    path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    [ "${path}" == "${file}" ] && {
+  if [ "${topdir}" ]
+  then
+    while read match
+    do
+      id=`echo ${match} | awk ' { print $1 } '`
+      [ "${id}" ] || continue
+      path=`${GDRIVE} info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
+      path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      echo ${path} | grep '/' > /dev/null && continue
       typ=`${GDRIVE} info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
       typ="$(echo -e "${typ}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
       echo ${typ} | grep folder > /dev/null && typ="dir"
-      break
-    }
-  done <<< `${GDRIVE} list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
-  [ "${typ}" ] || {
-    echo "No Google Drive file or folder '${file}' could be located"
-    echo "Perhaps it is owned by another user or it does not exist"
-    echo "Skipping download of '${file}'"
-    continue
-  }
-  [ "${typ}" == "dir" ] && recursive="--recursive"
-  if [ "${custompath}" ]
-  then
-    dlpath="${custompath}"
-  else
-    dlpath="${pdir}"
-  fi
-  if [ "${tell}" ]
-  then
-    echo "Would execute the command:"
-    echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
-  else
-    ${GDRIVE} download query --path "${dlpath}" \
+      [ "${typ}" ] || {
+        echo "No Google Drive file or folder '${file}' could be located"
+        echo "Perhaps it is owned by another user or it does not exist"
+        echo "Skipping download of '${path}'"
+        continue
+      }
+      [ "${typ}" == "dir" ] && {
+        [ "${recursive}" ] || continue
+      }
+      base=`${GDRIVE} info ${id} | grep ^Name: | awk -F ':' ' { print $2 } '`
+      base="$(echo -e "${base}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      if [ "${custompath}" ]
+      then
+        dlpath="${custompath}"
+      else
+        dlpath="${pdir}"
+      fi
+      if [ "${tell}" ]
+      then
+        echo "Would execute the command:"
+        echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
+      else
+        ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
+      fi
+    done <<< `${GDRIVE} list ${GDOPTS} --query " parents in '${parentid}'"`
+  else
+    while read match
+    do
+      id=`echo ${match} | awk ' { print $1 } '`
+      [ "${id}" ] || continue
+      path=`${GDRIVE} info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
+      # Remove leading and trailing spaces
+      path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      [ "${path}" == "${file}" ] && {
+        typ=`${GDRIVE} info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
+        typ="$(echo -e "${typ}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+        echo ${typ} | grep folder > /dev/null && typ="dir"
+        break
+      }
+    done <<< `${GDRIVE} list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
+    [ "${typ}" ] || {
+      echo "No Google Drive file or folder '${file}' could be located"
+      echo "Perhaps it is owned by another user or it does not exist"
+      echo "Skipping download of '${file}'"
+      continue
+    }
+    [ "${typ}" == "dir" ] && recursive="--recursive"
+    if [ "${custompath}" ]
+    then
+      dlpath="${custompath}"
+    else
+      dlpath="${pdir}"
+    fi
+    if [ "${tell}" ]
+    then
+      echo "Would execute the command:"
+      echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
+    else
+      ${GDRIVE} download query --path "${dlpath}" \
+           ${recursive} ${force} ${skip} ${delete} ${stdout} \
+           " name = '${base}' and parents in '${parentid}'"
+    fi
   fi
 done

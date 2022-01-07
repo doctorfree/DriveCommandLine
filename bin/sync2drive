@@ -72,11 +72,13 @@ delete="--delete-extraneous"
 listing=
 listpath=
 export GDRIVE=gdrive
+export GDGET=gdget
 while getopts "c:klm:npsu" flag; do
     case $flag in
         c)
             GHOM="${OPTARG}"
             export GDRIVE="gdrive --config ${OPTARG}"
+            export GDGET="gdget --config ${OPTARG}"
             ;;
         k)
             delete=
@@ -238,7 +240,7 @@ else
         # 1. Download the existing non-empty Google Drive folder
         tmpdir="tmp$$"
         [ -d ${tmpdir} ] && rm -rf ${tmpdir}
-        gdget -p ${tmpdir} "${folder}"
+        ${GDGET} -p ${tmpdir} "${folder}"
         # 2. Copy in extraneous files from the downloaded folder
         [ -d ${tmpdir}/"${folder}" ] || {
           echo "Download of ${folder} to ${tmpdir} failed"
