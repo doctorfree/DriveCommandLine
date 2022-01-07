@@ -30,12 +30,12 @@ PKG_VER=${VERSION}
 PKG_REL=${RELEASE}
 
 get_available_packages() {
-  for pkgs in ${SRC}/${SRC_NAME}/releases/${PKG_VER}/*.${SUF}
+  for pkgs in ${SRC}/${SRC_NAME}/releases/${PKG_VER}/*linux_${ARCH}.${SUF}
   do
-    [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/${PKG_VER}/*.${SUF}" ] || {
+    [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/${PKG_VER}/*linux_${ARCH}.${SUF}" ] || {
       for pkg in ${pkgs}
       do
-        pkgname=`basename ${pkg} | sed -e "s/_${PKG_VER}-${PKG_REL}.${SUF}//"` 
+        pkgname=`basename ${pkg} | sed -e "s/_${PKG_VER}-${PKG_REL}.linux_${ARCH}.${SUF}//"` 
         PKG_AVAILABLE="${PKG_AVAILABLE} ${pkgname}"
       done
     }
@@ -93,6 +93,7 @@ else
     SUF=rpm
     ARCH=`rpm --eval '%{_arch}'`
   fi
+  [ "${ARCH}" == "x86_64" ] && ARCH="amd64"
 
   get_available_packages
 
@@ -151,20 +152,23 @@ else
 
   for PKG_NAME in ${PKG_NAMES}
   do
-    PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}.${SUF}"
+    PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.linux_${ARCH}.${SUF}"
     [ -f "${PKG}" ] || {
-      PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF}"
+      PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}.${SUF}"
       [ -f "${PKG}" ] || {
-        echo "${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF} not found."
-        for pkgs in ${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}
-        do
-          [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}" ] || {
-            echo "Found existing packages:"
-            echo "${pkgs}"
-          }
-        done
-        echo ""
-        continue
+        PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF}"
+        [ -f "${PKG}" ] || {
+          echo "${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF} not found."
+          for pkgs in ${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}
+          do
+            [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}" ] || {
+              echo "Found existing packages:"
+              echo "${pkgs}"
+            }
+          done
+          echo ""
+          continue
+        }
       }
     }
 
