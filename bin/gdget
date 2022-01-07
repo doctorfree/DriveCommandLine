@@ -8,16 +8,17 @@
 gdinst=`type -p gdrive`
 [ "${gdinst}" ] || {
     echo "The 'gdrive' command is not installed or not in the execution PATH"
-    echo "Visit https://github.com/prasmussen/gdrive/releases to download"
-    echo "a 'gdrive' binary for this platform"
+    echo "Visit https://github.com/doctorfree/DriveCommandLine/releases to download"
+    echo "a 'DriveCommandLine' distribution archive or package for this platform"
     exit 1
 }
 
 GHOM=${HOME}/.gdrive
 GDOPTS="--no-header --absolute --max 100 --name-width 0"
 
-[ -f ${GHOM}/gdhome ] || {
-    HERE=`pwd`
+get_gdhome() {
+  [ -f ${GHOM}/gdhome ] || {
+    HERE="${HOME}/gdrive"
     while true
     do
         read -p "Initializing gdrive home to ${HERE}. Ok ? ('Y'/'N'): " yn
@@ -41,19 +42,17 @@ GDOPTS="--no-header --absolute --max 100 --name-width 0"
                 ;;
         esac
     done
-}
+  }
 
-. ${GHOM}/gdhome
-[ -d ${GDHOME} ] || {
-    echo "Cannot locate gdrive home ${GDHOME}"
-    echo "Edit ${GHOM}/gdhome and set your local gdrive home"
-    exit 1
+  . ${GHOM}/gdhome
+  [ -d ${GDHOME} ] || mkdir -p ${GDHOME}
+  cd ${GDHOME}
 }
-cd ${GDHOME}
 
 usage() {
-  printf "\nUsage: gdget [-d] [-f] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]"
+  printf "\nUsage: gdget [-c configdir] [-d] [-f] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]"
   printf "\nWhere:\n\t-n indicates tell me what you would do but don't do it"
+  printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-d indicates delete remote file when download is successful"
   printf "\n\t-f indicates force overwrite of existing file"
   printf "\n\t-p 'path' specifies a download path"
@@ -83,8 +82,13 @@ custompath=
 delete=
 stdout=
 
-while getopts "dfp:norsu" flag; do
+export GDRIVE=gdrive
+while getopts "c:dfp:norsu" flag; do
     case $flag in
+        c)
+            GHOM="${OPTARG}"
+            export GDRIVE="gdrive --config ${OPTARG}"
+            ;;
         d)
             delete="--delete"
             ;;
@@ -113,6 +117,8 @@ while getopts "dfp:norsu" flag; do
 done
 shift $(( OPTIND - 1 ))
 
+get_gdhome
+
 for file in "$@"
 do
   recursive=
@@ -126,16 +132,16 @@ do
   do
     id=`echo ${match} | awk ' { print $1 } '`
     [ "${id}" ] || continue
-    path=`gdrive info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
+    path=`${GDRIVE} info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
     # Remove leading and trailing spaces
     path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     [ "${path}" == "${file}" ] && {
-      typ=`gdrive info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
+      typ=`${GDRIVE} info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
       typ="$(echo -e "${typ}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
       echo ${typ} | grep folder > /dev/null && typ="dir"
       break
     }
-  done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
+  done <<< `${GDRIVE} list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
   [ "${typ}" ] || {
     echo "No Google Drive file or folder '${file}' could be located"
     echo "Perhaps it is owned by another user or it does not exist"
@@ -152,9 +158,9 @@ do
   if [ "${tell}" ]
   then
     echo "Would execute the command:"
-    echo "gdrive download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
+    echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
   else
-    gdrive download query --path "${dlpath}" \
+    ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
   fi

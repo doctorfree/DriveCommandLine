@@ -8,16 +8,17 @@
 gdinst=`type -p gdrive`
 [ "${gdinst}" ] || {
     echo "The 'gdrive' command is not installed or not in the execution PATH"
-    echo "Visit https://github.com/prasmussen/gdrive/releases to download"
-    echo "a 'gdrive' binary for this platform"
+    echo "Visit https://github.com/doctorfree/DriveCommandLine/releases to download"
+    echo "a 'DriveCommandLine' distribution archive or package for this platform"
     exit 1
 }
 
 GHOM=${HOME}/.gdrive
 GDOPTS="--no-header --absolute --max 100 --name-width 0"
 
-[ -f ${GHOM}/gdhome ] || {
-    HERE=`pwd`
+get_gdhome() {
+  [ -f ${GHOM}/gdhome ] || {
+    HERE="${HOME}/gdrive"
     while true
     do
         read -p "Initializing gdrive home to ${HERE}. Ok ? ('Y'/'N'): " yn
@@ -41,23 +42,21 @@ GDOPTS="--no-header --absolute --max 100 --name-width 0"
                 ;;
         esac
     done
-}
+  }
 
-. ${GHOM}/gdhome
-[ -d ${GDHOME} ] || {
-    echo "Cannot locate gdrive home ${GDHOME}"
-    echo "Edit ${GHOM}/gdhome and set your local gdrive home"
-    exit 1
+  . ${GHOM}/gdhome
+  [ -d ${GDHOME} ] || mkdir -p ${GDHOME}
+  cd ${GDHOME}
 }
-cd ${GDHOME}
 
 TELL=
 splitpath=1
 recursive=
 
 usage() {
-  printf "\nUsage: gdrm [-n] [-r] [-s] [-u] path/to/fileorfolder [file2 ...]"
+  printf "\nUsage: gdrm [-c configdir] [-n] [-r] [-s] [-u] path/to/fileorfolder [file2 ...]"
   printf "\nWhere:\n\t-n indicates tell me what you would do but don't do it"
+  printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-r indicates remove directory and its contents recursively"
   printf "\n\t-s indicates do not split path to identify name"
   printf "\n\t\t(useful when there is a slash in the filename)"
@@ -65,8 +64,13 @@ usage() {
   exit 1
 }
 
-while getopts "nrsu" flag; do
+export GDRIVE=gdrive
+while getopts "c:nrsu" flag; do
     case $flag in
+        c)
+            GHOM="${OPTARG}"
+            export GDRIVE="gdrive --config ${OPTARG}"
+            ;;
         n)
             TELL=1
             ;;
@@ -87,6 +91,8 @@ shift $(( OPTIND - 1 ))
   echo "rmfile requires at least one argument specifying folder or file to remove"
   usage
 }
+
+get_gdhome
 
 for file in "$@"
 do
@@ -114,12 +120,12 @@ do
   do
     id=`echo ${match} | awk ' { print $1 } '`
     [ "${id}" ] || continue
-    path=`gdrive info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
+    path=`${GDRIVE} info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
     # Remove leading and trailing spaces
     path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     [ "${path}" == "${file}" ] && {
       fid=${id}
-      typ=`gdrive info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
+      typ=`${GDRIVE} info ${id} | grep ^Mime: | awk -F ':' ' { print $2 } '`
       typ="$(echo -e "${typ}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
       echo ${typ} | grep folder > /dev/null && typ="dir"
       [ "${typ}" == "dir" ] && {
@@ -134,10 +140,10 @@ do
       if [ "${TELL}" ]
       then
         echo "Would remove ${file} with id=${fid} with command:"
-        echo "gdrive delete ${recursive} ${fid}"
+        echo "${GDRIVE} delete ${recursive} ${fid}"
       else
-        gdrive delete ${recursive} ${fid}
+        ${GDRIVE} delete ${recursive} ${fid}
       fi
     }
-  done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
+  done <<< `${GDRIVE} list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
 done

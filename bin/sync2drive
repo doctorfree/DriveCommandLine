@@ -8,15 +8,16 @@
 gdinst=`type -p gdrive`
 [ "${gdinst}" ] || {
     echo "The 'gdrive' command is not installed or not in the execution PATH"
-    echo "Visit https://github.com/prasmussen/gdrive/releases to download"
-    echo "a 'gdrive' binary for this platform"
+    echo "Visit https://github.com/doctorfree/DriveCommandLine/releases to download"
+    echo "a 'DriveCommandLine' distribution archive or package for this platform"
     exit 1
 }
 
 GHOM=${HOME}/.gdrive
 
-[ -f ${GHOM}/gdhome ] || {
-    HERE=`pwd`
+get_gdhome() {
+  [ -f ${GHOM}/gdhome ] || {
+    HERE="${HOME}/gdrive"
     while true
     do
         read -p "Initializing gdrive home to ${HERE}. Ok ? ('Y'/'N'): " yn
@@ -40,22 +41,20 @@ GHOM=${HOME}/.gdrive
                 ;;
         esac
     done
-}
+  }
 
-. ${GHOM}/gdhome
-[ -d ${GDHOME} ] || {
-    echo "Cannot locate gdrive home ${GDHOME}"
-    echo "Edit ${GHOM}/gdhome and set your local gdrive home"
-    exit 1
+  . ${GHOM}/gdhome
+  [ -d ${GDHOME} ] || mkdir -p ${GDHOME}
+  cd ${GDHOME}
 }
-cd ${GDHOME}
 
 TELL=
 splitpath=1
 
 usage() {
-  printf "\nUsage: sync2drive [-k] [-l] [-m maxfiles] [-n] [-s] [-u] folder|path/to/folder"
+  printf "\nUsage: sync2drive [-c configdir] [-k] [-l] [-m maxfiles] [-n] [-s] [-u] folder|path/to/folder"
   printf "\nWhere:"
+  printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-k indicates do not delete extraneous remote files"
   printf "\n\t-l indicates list sync folders and exit"
   printf "\n\t-p indicates list sync folders and display path and shared status"
@@ -70,47 +69,24 @@ usage() {
 
 maxfiles=100
 delete="--delete-extraneous"
-while getopts "klm:npsu" flag; do
+listing=
+listpath=
+export GDRIVE=gdrive
+while getopts "c:klm:npsu" flag; do
     case $flag in
+        c)
+            GHOM="${OPTARG}"
+            export GDRIVE="gdrive --config ${OPTARG}"
+            ;;
         k)
             delete=
             ;;
         l)
-            gdrive sync list
-            exit 0
+            listing=1
             ;;
         p)
-            printf "\nId                                  Name\t\t\tCreated\t\tShared"
-            while read syncfolder
-            do
-                thisID=`echo ${syncfolder} | awk ' { print $1 } '`
-                [ "${thisID}" ] || continue
-                path=`gdrive info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
-                path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-                date=`gdrive info ${thisID} | grep ^Created: | awk -F ':' ' { print $2 } '`
-                date="$(echo -e "${date}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-                shared=`gdrive info ${thisID} | grep ^Shared: | awk -F ':' ' { print $2 } '`
-                shared="$(echo -e "${shared}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-                pathsize=`echo ${path} | wc -c`
-                if [ ${pathsize} -lt 8 ]
-                then
-                  printf "\n${thisID}   ${path}\t\t\t\t${date}\t${shared}"
-                else
-                  if [ ${pathsize} -lt 16 ]
-                  then
-                    printf "\n${thisID}   ${path}\t\t\t${date}\t${shared}"
-                  else
-                    if [ ${pathsize} -lt 20 ]
-                    then
-                      printf "\n${thisID}   ${path}\t\t${date}\t${shared}"
-                    else
-                      printf "\n${thisID}   ${path}\t${date}\t${shared}"
-                    fi
-                  fi
-                fi
-            done <<< `gdrive sync list --no-header`
-            printf "\n"
-            exit 0
+            listing=1
+            listpath=1
             ;;
         m)
             maxfiles=${OPTARG}
@@ -128,7 +104,48 @@ while getopts "klm:npsu" flag; do
 done
 shift $(( OPTIND - 1 ))
 
+get_gdhome
+
 GDOPTS="--no-header --absolute --max ${maxfiles} --name-width 0"
+
+[ "${listing}" ] && {
+  if [ "${listpath}" ]
+  then
+    printf "\nId                                  Name\t\t\tCreated\t\tShared"
+    while read syncfolder
+    do
+      thisID=`echo ${syncfolder} | awk ' { print $1 } '`
+      [ "${thisID}" ] || continue
+      path=`${GDRIVE} info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
+      path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      date=`${GDRIVE} info ${thisID} | grep ^Created: | awk -F ':' ' { print $2 } '`
+      date="$(echo -e "${date}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      shared=`${GDRIVE} info ${thisID} | grep ^Shared: | awk -F ':' ' { print $2 } '`
+      shared="$(echo -e "${shared}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      pathsize=`echo ${path} | wc -c`
+      if [ ${pathsize} -lt 8 ]
+      then
+        printf "\n${thisID}   ${path}\t\t\t\t${date}\t${shared}"
+      else
+        if [ ${pathsize} -lt 16 ]
+        then
+          printf "\n${thisID}   ${path}\t\t\t${date}\t${shared}"
+        else
+          if [ ${pathsize} -lt 20 ]
+          then
+            printf "\n${thisID}   ${path}\t\t${date}\t${shared}"
+          else
+            printf "\n${thisID}   ${path}\t${date}\t${shared}"
+          fi
+        fi
+      fi
+    done <<< `${GDRIVE} sync list --no-header`
+    printf "\n"
+  else
+    ${GDRIVE} sync list
+  fi
+  exit 0
+}
 
 folder="$1"
 [ "${folder}" ] || {
@@ -170,25 +187,25 @@ while read match
 do
     thisID=`echo ${match} | awk ' { print $1 } '`
     [ "${thisID}" ] || continue
-    thisPath=`gdrive info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
+    thisPath=`${GDRIVE} info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
     # Remove leading and trailing spaces
     thisPath="$(echo -e "${thisPath}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     [ "${thisPath}" == "${folder}" ] && {
       exists=${thisID}
       FID=${exists}
-      children=`gdrive list --no-header --absolute --max 50 --name-width 0 --query " '${FID}' in parents" | wc -l`
+      children=`${GDRIVE} list --no-header --absolute --max 50 --name-width 0 --query " '${FID}' in parents" | wc -l`
       break
     }
-done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
+done <<< `${GDRIVE} list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
 
 [ "${exists}" ] || {
     [ "${TELL}" ] && echo "Would create new folder ${folder} in Google Drive"
     # Create directory on drive
     if [ "${TELL}" ]
     then
-      echo "gdrive mkdir --parent ${parentid} ${base} | awk ' { print FID } '"
+      echo "${GDRIVE} mkdir --parent ${parentid} ${base} | awk ' { print FID } '"
     else
-      FID=`gdrive mkdir --parent ${parentid} "${base}" | awk ' { print $2 } '`
+      FID=`${GDRIVE} mkdir --parent ${parentid} "${base}" | awk ' { print $2 } '`
     fi
 }
 
@@ -203,16 +220,16 @@ then
     fi
     if [ "${FID}" ]
     then
-        gdrive sync upload --dry-run ${delete} "${folder}" ${FID}
+        ${GDRIVE} sync upload --dry-run ${delete} "${folder}" ${FID}
     else
-        echo "gdrive sync upload ${delete} ${folder} FID"
+        echo "${GDRIVE} sync upload ${delete} ${folder} FID"
     fi
 else
     if [ "${exists}" ]
     then
       if [ ${children} -eq 0 ]
       then
-        gdrive sync upload ${delete} "${folder}" ${FID}
+        ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
         echo "${FID}" > "${folder}"/.folderid
       else
         # Need to perform some gymnastics here to create a sync folder
@@ -243,14 +260,14 @@ else
         done
         rm -rf ${tmpdir}
         # 3. Remove the existing Google Drive folder
-        gdrive delete --recursive ${FID}
+        ${GDRIVE} delete --recursive ${FID}
         # 4. Create a new Google Drive folder
-        FID=`gdrive mkdir --parent ${parentid} "${base}" | awk ' { print $2 } '`
+        FID=`${GDRIVE} mkdir --parent ${parentid} "${base}" | awk ' { print $2 } '`
         # 5. Sync to the new folder
-        gdrive sync upload ${delete} "${folder}" ${FID}
+        ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
       fi
     else
-        gdrive sync upload ${delete} "${folder}" ${FID}
+        ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
     fi
     echo "${FID}" > "${folder}"/.folderid
 fi

@@ -22,15 +22,16 @@
 gdinst=`type -p gdrive`
 [ "${gdinst}" ] || {
     echo "The 'gdrive' command is not installed or not in the execution PATH"
-    echo "Visit https://github.com/prasmussen/gdrive/releases to download"
-    echo "a 'gdrive' binary for this platform"
+    echo "Visit https://github.com/doctorfree/DriveCommandLine/releases to download"
+    echo "a 'DriveCommandLine' distribution archive or package for this platform"
     exit 1
 }
 
 GHOM=${HOME}/.gdrive
 
-[ -f ${GHOM}/gdhome ] || {
-    HERE=`pwd`
+get_gdhome() {
+  [ -f ${GHOM}/gdhome ] || {
+    HERE="${HOME}/gdrive"
     while true
     do
         read -p "Initializing gdrive home to ${HERE}. Ok ? ('Y'/'N'): " yn
@@ -54,17 +55,12 @@ GHOM=${HOME}/.gdrive
                 ;;
         esac
     done
-}
+  }
 
-. ${GHOM}/gdhome
-[ -d ${GDHOME} ] || {
-    echo "Cannot locate gdrive home ${GDHOME}"
-    echo "Edit ${GHOM}/gdhome and set your local gdrive home"
-    exit 1
+  . ${GHOM}/gdhome
+  [ -d ${GDHOME} ] || mkdir -p ${GDHOME}
+  cd ${GDHOME}
 }
-cd ${GDHOME}
-ID_DIR="${GDHOME}/drive_ids"
-BU_DIR="${GDHOME}/Bak/drive_ids"
 
 ONLY=1
 TELL=
@@ -72,8 +68,9 @@ VERB=
 maxfiles=500
 
 usage() {
-  printf "\nUsage: getfolderids [-f] [-m maxfiles] [-n] [-u] [-v] [path/to/folder]"
+  printf "\nUsage: getfolderids [-c configdir] [-f] [-m maxfiles] [-n] [-u] [-v] [path/to/folder]"
   printf "\nWhere:"
+  printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-f indicates 'files', also create a list of file IDs (slower)\n"
   printf "\n\t-m 'maxfiles' specifies the maximum number of files in query return"
   printf "\n\t\t(default: 500)"
@@ -90,8 +87,13 @@ usage() {
   exit 1
 }
 
-while getopts "fm:nuv" flag; do
+export GDRIVE=gdrive
+while getopts "c:fm:nuv" flag; do
     case $flag in
+        c)
+            GHOM="${OPTARG}"
+            export GDRIVE="gdrive --config ${OPTARG}"
+            ;;
         f)
             ONLY=
             ;;
@@ -111,7 +113,11 @@ while getopts "fm:nuv" flag; do
 done
 shift $(( OPTIND - 1 ))
 
+get_gdhome
+
 GDOPTS="--no-header --absolute --max ${maxfiles} --name-width 0"
+ID_DIR="${GDHOME}/drive_ids"
+BU_DIR="${GDHOME}/Bak/drive_ids"
 
 FOLDER=
 [ "$1" ] && {
@@ -125,10 +131,10 @@ then
 else
   # Get top folder ID by creating a directory, getting its parent id, then remove it
   tmpfolder="__tmpfolder__$$"
-  TMPFID=`gdrive mkdir ${tmpfolder} | awk ' { print $2 } '`
-  GDID=`gdrive info ${TMPFID} | grep Parents: | awk ' { print $2 } '`
+  TMPFID=`${GDRIVE} mkdir ${tmpfolder} | awk ' { print $2 } '`
+  GDID=`${GDRIVE} info ${TMPFID} | grep Parents: | awk ' { print $2 } '`
   echo "Retrieved top level folder ID = ${GDID}"
-  gdrive delete --recursive ${TMPFID} > /dev/null
+  ${GDRIVE} delete --recursive ${TMPFID} > /dev/null
   [ "${GDID}" ] && echo "${GDID}" > .folderid
 fi
 [ "${GDID}" ] || {
@@ -169,7 +175,7 @@ then
   do
     thisID=`echo ${match} | awk ' { print $1 } '`
     [ "${thisID}" ] || continue
-    thisPath=`gdrive info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
+    thisPath=`${GDRIVE} info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
     # Remove leading and trailing spaces
     thisPath="$(echo -e "${thisPath}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     [ "${thisPath}" == "${FOLDER}" ] && {
@@ -185,7 +191,7 @@ then
       fi
       break
     }
-  done <<< `gdrive list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
+  done <<< `${GDRIVE} list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
 
   [ "${exists}" ] || {
     echo "Cannot locate specified folder: ${FOLDER}"
@@ -219,10 +225,10 @@ getids() {
   do
     thisID=`echo ${entry} | awk ' { print $1 } '`
     [ "${thisID}" ] || continue
-    thisPath=`gdrive info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
+    thisPath=`${GDRIVE} info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
     # Remove leading and trailing spaces
     thisPath="$(echo -e "${thisPath}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    thisType=`gdrive info ${thisID} | grep ^Mime: | awk -F ':' ' { print $2 } '`
+    thisType=`${GDRIVE} info ${thisID} | grep ^Mime: | awk -F ':' ' { print $2 } '`
     thisType="$(echo -e "${thisType}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     echo ${thisType} | grep folder > /dev/null && thisType="dir"
     if [ "${thisType}" == "dir" ]
@@ -252,7 +258,7 @@ getids() {
         fi
       }
     fi
-  done <<< `gdrive list ${GDOPTS} --query " '$1' in parents"`
+  done <<< `${GDRIVE} list ${GDOPTS} --query " '$1' in parents"`
 }
 
 subdirIDs=

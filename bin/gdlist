@@ -8,15 +8,16 @@
 gdinst=`type -p gdrive`
 [ "${gdinst}" ] || {
     echo "The 'gdrive' command is not installed or not in the execution PATH"
-    echo "Visit https://github.com/prasmussen/gdrive/releases to download"
-    echo "a 'gdrive' binary for this platform"
+    echo "Visit https://github.com/doctorfree/DriveCommandLine/releases to download"
+    echo "a 'DriveCommandLine' distribution archive or package for this platform"
     exit 1
 }
 
 GHOM=${HOME}/.gdrive
 
-[ -f ${GHOM}/gdhome ] || {
-    HERE=`pwd`
+get_gdhome() {
+  [ -f ${GHOM}/gdhome ] || {
+    HERE="${HOME}/gdrive"
     while true
     do
         read -p "Initializing gdrive home to ${HERE}. Ok ? ('Y'/'N'): " yn
@@ -40,29 +41,32 @@ GHOM=${HOME}/.gdrive
                 ;;
         esac
     done
-}
+  }
 
-. ${GHOM}/gdhome
-[ -d ${GDHOME} ] || {
-    echo "Cannot locate gdrive home ${GDHOME}"
-    echo "Edit ${GHOM}/gdhome and set your local gdrive home"
-    exit 1
+  . ${GHOM}/gdhome
+  [ -d ${GDHOME} ] || mkdir -p ${GDHOME}
+  cd ${GDHOME}
 }
-cd ${GDHOME}
 
 maxfiles=100
 
 usage() {
-  printf "\nUsage: gdlist [-m maxfiles] [-u] path/to/fileorfolder [file2 ...]"
+  printf "\nUsage: gdlist [-c configdir] [-m maxfiles] [-u] path/to/fileorfolder [file2 ...]"
   printf "\nWhere:"
+  printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-m 'maxfiles' specifies the maximum number of files to list"
   printf "\n\t\t(default: 100)"
   printf "\n\t-u displays this usage message\n"
   exit 1
 }
 
-while getopts "m:u" flag; do
+export GDRIVE=gdrive
+while getopts "c:m:u" flag; do
     case $flag in
+        c)
+            GHOM="${OPTARG}"
+            export GDRIVE="gdrive --config ${OPTARG}"
+            ;;
         m)
             maxfiles=${OPTARG}
             ;;
@@ -73,15 +77,17 @@ while getopts "m:u" flag; do
 done
 shift $(( OPTIND - 1 ))
 
+get_gdhome
+
 if [ $# -eq 0 ]
 then
-    gdrive list --absolute --max ${maxfiles} --name-width 0
+    ${GDRIVE} list --absolute --max ${maxfiles} --name-width 0
 else
     for folder in "$@"
     do
         [ -f "${folder}"/.folderid ] || continue
         fid=`cat "${folder}"/.folderid`
-        gdrive list --absolute --max ${maxfiles} --name-width 0 \
+        ${GDRIVE} list --absolute --max ${maxfiles} --name-width 0 \
                     --query " '${fid}' in parents"
     done
 fi

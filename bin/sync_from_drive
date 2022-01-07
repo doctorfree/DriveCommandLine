@@ -17,15 +17,16 @@
 gdinst=`type -p gdrive`
 [ "${gdinst}" ] || {
     echo "The 'gdrive' command is not installed or not in the execution PATH"
-    echo "Visit https://github.com/prasmussen/gdrive/releases to download"
-    echo "a 'gdrive' binary for this platform"
+    echo "Visit https://github.com/doctorfree/DriveCommandLine/releases to download"
+    echo "a 'DriveCommandLine' distribution archive or package for this platform"
     exit 1
 }
 
 GHOM=${HOME}/.gdrive
 
-[ -f ${GHOM}/gdhome ] || {
-    HERE=`pwd`
+get_gdhome() {
+  [ -f ${GHOM}/gdhome ] || {
+    HERE="${HOME}/gdrive"
     while true
     do
         read -p "Initializing gdrive home to ${HERE}. Ok ? ('Y'/'N'): " yn
@@ -49,31 +50,34 @@ GHOM=${HOME}/.gdrive
                 ;;
         esac
     done
-}
+  }
 
-. ${GHOM}/gdhome
-[ -d ${GDHOME} ] || {
-    echo "Cannot locate gdrive home ${GDHOME}"
-    echo "Edit ${GHOM}/gdhome and set your local gdrive home"
-    exit 1
+  . ${GHOM}/gdhome
+  [ -d ${GDHOME} ] || mkdir -p ${GDHOME}
+  cd ${GDHOME}
 }
-cd ${GDHOME}
 
 TELL=
+listing=
 
 usage() {
-  printf "\nUsage: sync_from_drive [-l] [-n] [-u] folder | path/to/folder"
+  printf "\nUsage: sync_from_drive [-c configdir] [-l] [-n] [-u] folder | path/to/folder"
   printf "\nWhere:\n\t-n indicates tell me what you would do but don't do it"
+  printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-l indicates list sync folders and exit"
   printf "\n\t-u displays this usage message\n"
   exit 1
 }
 
-while getopts "lnu" flag; do
+export GDRIVE=gdrive
+while getopts "c:lnu" flag; do
     case $flag in
+        c)
+            GHOM="${OPTARG}"
+            export GDRIVE="gdrive --config ${OPTARG}"
+            ;;
         l)
-            gdrive sync list
-            exit 0
+            listing=1
             ;;
         n)
             TELL=1
@@ -84,6 +88,13 @@ while getopts "lnu" flag; do
     esac
 done
 shift $(( OPTIND - 1 ))
+
+get_gdhome
+
+[ "${listing}" ] && {
+    ${GDRIVE} sync list
+    exit 0
+}
 
 folder="$1"
 [ "${folder}" ] || {
@@ -144,7 +155,7 @@ do
       exists=${syncid}
       break
     }
-done <<< `gdrive sync list --no-header`
+done <<< `${GDRIVE} sync list --no-header`
 
 [ "${exists}" ] || {
   echo "No sync folder for ${folder} exists."
@@ -155,7 +166,7 @@ done <<< `gdrive sync list --no-header`
 if [ "${TELL}" ]
 then
     echo "Would sync folder ${folder} from Google Drive"
-    echo "gdrive sync download ${exists} ${folder}"
+    echo "${GDRIVE} sync download ${exists} ${folder}"
 else
-    gdrive sync download ${exists} "${folder}"
+    ${GDRIVE} sync download ${exists} "${folder}"
 fi
