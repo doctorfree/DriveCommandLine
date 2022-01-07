@@ -60,7 +60,8 @@ ${SUDO} cp bin/* ${OUT_DIR}/${LBIN}
 
 # Build all the gdrive binaries
 [ -d releases ] || mkdir releases
-bin/build-all.sh "${SRC}/${SRC_NAME}"
+[ -x scripts/build-all.sh ] || chmod 755 scripts/build-all.sh
+scripts/build-all.sh "${SRC}/${SRC_NAME}"
 
 ${SUDO} cp AUTHORS ${OUT_DIR}/${TOP}/share/doc/${PKG}/AUTHORS
 ${SUDO} cp LICENSE ${OUT_DIR}/${TOP}/share/doc/${PKG}/copyright
