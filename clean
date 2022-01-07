@@ -1,3 +1,13 @@
 #!/bin/bash
 
-sudo rm -rf dist releases
+all=
+
+[ "$1" == "all" ] && all=1
+
+if [ "${all}" ]
+then
+    sudo rm -rf dist releases
+else
+    . ./VERSION
+    sudo rm -rf dist releases/${VERSION}
+fi
