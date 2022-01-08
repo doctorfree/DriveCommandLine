@@ -76,10 +76,20 @@ Currently DriveCommandLine and control scripts include support for:
 - Unix style manual pages for all commands (see the [DriveCommandLine wiki](https://gitlab.com/doctorfree/DriveCommandLine/-/wikis/home))
 
 ## News
-#### 28.05.2021
-gdrive is finally verified for using sensitive scopes which should fix the
-`This app is blocked` error. Note that the project name will show up as
-`project-367116221053` when granting access to you account.
+### Jan 05, 2022
+DriveCommandLine supports installation package and distribution archives
+for multiple platforms and architectures including:
+
+aix_ppc64, android_386, android_amd64, android_arm64, darwin_amd64,
+darwin_arm64, dragonfly_amd64, freebsd_386, freebsd_amd64, freebsd_arm64,
+freebsd_arm, illumos_amd64, js_wasm, linux_386, linux_amd64, linux_arm64,
+linux_arm, linux_mips64, linux_mips64le, linux_mips, linux_mipsle,
+linux_ppc64, linux_ppc64le, linux_riscv64
+
+### May 28, 2021
+the `gdrive` project is verified for using sensitive scopes which should
+fix the `This app is blocked` error. Note that the project name will show
+up as `project-367116221053` when granting access to you account.
 
 ## Prerequisites
 
