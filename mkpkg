@@ -87,7 +87,7 @@ do
   ${SUDO} rm -f ${OUT_DIR}/${LBIN}/gdrive*
   # Copy the os/architecture specific gdrive binary into place
   ${SUDO} cp ${platforms}/gdrive* ${OUT_DIR}/${LBIN}
-  ${SUDO} chown root:root ${OUT_DIR}/gdrive*
+  ${SUDO} chown root:root ${OUT_DIR}/${LBIN}/gdrive*
 
   [ "${OPSM}" == "linux" ] && {
     echo "Building Debian and RPM packages for ${platform}"
