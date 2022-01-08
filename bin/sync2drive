@@ -75,9 +75,11 @@ if [ "${GDRIVE_CONFIG_DIR}" ]
 then
     export GDRIVE="gdrive --config '${GDRIVE_CONFIG_DIR}'"
     export GDGET="gdget -c '${GDRIVE_CONFIG_DIR}'"
+    export GETFOLDERIDS="getfolderids -c '${GDRIVE_CONFIG_DIR}'"
 else
     export GDRIVE=gdrive
     export GDGET=gdget
+    export GETFOLDERIDS="getfolderids"
 fi
 while getopts "c:klm:npsu" flag; do
     case $flag in
@@ -85,6 +87,7 @@ while getopts "c:klm:npsu" flag; do
             GHOM="${OPTARG}"
             export GDRIVE="gdrive --config ${OPTARG}"
             export GDGET="gdget -c ${OPTARG}"
+            export GETFOLDERIDS="getfolderids -c '${GDRIVE_CONFIG_DIR}'"
             ;;
         k)
             delete=
@@ -238,7 +241,8 @@ else
       if [ ${children} -eq 0 ]
       then
         ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
-        echo "${FID}" > "${folder}"/.folderid
+        # echo "${FID}" > "${folder}"/.folderid
+        ${GETFOLDERIDS} "${folder}"
       else
         # Need to perform some gymnastics here to create a sync folder
         # for an existing non-empty Google Drive folder
@@ -277,5 +281,6 @@ else
     else
         ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
     fi
-    echo "${FID}" > "${folder}"/.folderid
+    # echo "${FID}" > "${folder}"/.folderid
+    ${GETFOLDERIDS} "${folder}"
 fi

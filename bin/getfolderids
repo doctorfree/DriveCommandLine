@@ -140,15 +140,10 @@ else
   GDID=`${GDRIVE} info ${TMPFID} | grep Parents: | awk ' { print $2 } '`
   echo "Retrieved top level folder ID = ${GDID}"
   ${GDRIVE} delete --recursive ${TMPFID} > /dev/null
+  echo "Adding folder ID for Google Drive root"
   [ "${GDID}" ] && echo "${GDID}" > .folderid
 fi
-[ "${GDID}" ] || {
-  echo "Could not retrieve top-level drive ID"
-  echo "Using previously created setting for top-level ID"
-  # Replace this ID with the ID of the top level of your Google Drive
-  # that you wish to use with the gdrive command line utility
-  GDID='0AHIaKKQ-Wu1RUk9PVA'
-}
+[ "${GDID}" ] || echo "Could not retrieve Google Drive root ID"
 TOPID=${GDID}
 
 [ -d ${ID_DIR} ] || mkdir -p ${ID_DIR}
@@ -192,6 +187,7 @@ then
         echo "Would add folder id '${FOLDER}/.folderid'"
       else
         [ -d "${FOLDER}" ] || mkdir -p "${FOLDER}"
+        echo "Adding folder ID for '${FOLDER}'"
         [ "${TOPID}" ] && echo "${TOPID}" > "${FOLDER}"/.folderid
       fi
       break
@@ -268,6 +264,17 @@ getids() {
 
 subdirIDs=
 # Start at top or specified folder
+[ "${TOPID}" ] || {
+  if [ "${FOLDER}" ]
+  then
+    echo "Could not retrieve required folder ID for ${FOLDER}"
+  else
+    echo "Could not retrieve required folder ID for Google Drive root"
+  fi
+  echo "Exiting."
+  exit 1
+}
+
 [ "${TELL}" ] && echo "Calling getids ${TOPID}"
 getids ${TOPID}
 [ "${subdirIDs}" ] && {
