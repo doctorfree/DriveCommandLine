@@ -52,7 +52,6 @@ for dir in "${TOP}" "${DESTDIR}" "${LBIN}" "${TOP}/share" \
             "${TOP}/share/doc" "${TOP}/share/doc/${PKG}"
 do
     [ -d ${OUT_DIR}/${dir} ] || ${SUDO} mkdir ${OUT_DIR}/${dir}
-    ${SUDO} chown root:root ${OUT_DIR}/${dir}
 done
 
 # Copy in the DriveCommandLine scripts
@@ -74,6 +73,9 @@ ${SUDO} cp -a man "${OUT_DIR}/${TOP}/share/man"
 
 ${SUDO} chmod 755 ${OUT_DIR}/${LBIN}/*
 
+# Set ownership of distribution hierarchy to root:root
+${SUDO} chown -R root:root ${OUT_DIR}
+
 for platforms in releases/bin/*
 do
   platform=`basename ${platforms}`
@@ -85,6 +87,7 @@ do
   ${SUDO} rm -f ${OUT_DIR}/${LBIN}/gdrive*
   # Copy the os/architecture specific gdrive binary into place
   ${SUDO} cp ${platforms}/gdrive* ${OUT_DIR}/${LBIN}
+  ${SUDO} chown root:root ${OUT_DIR}/gdrive*
 
   [ "${OPSM}" == "linux" ] && {
     echo "Building Debian and RPM packages for ${platform}"
