@@ -30,6 +30,7 @@ documentation.
 1. [Overview](#overview)
 1. [News](#news)
 1. [Prerequisites](#prerequisites)
+1. [Quick start guide](#quick-start-guide)
 1. [Installation](#installation)
     1. [Debian package installation](#debian-package-installation)
     1. [RPM package installation](#rpm-package-installation)
@@ -107,6 +108,31 @@ Windows platform under the Linux subsystem but this has not been tested.
 
 If you want to [compile from source](#compile-from-source) you need the
 [go toolchain](http://golang.org/doc/install) version 1.5 or higher.
+
+## Quick start guide
+
+There is a wealth of information available in this document, the wiki, and the
+DriveCommandLine documentation but users already familiar with `gdrive` may
+wish to quickly jump to installing and setting up DriveCommandLine. This quick
+start guide assumes you have a good familiarity with systems, architectures,
+and the installation process. It provides only the basic steps necessary
+to install, setup, and use DriveCommandLine. Skip to the
+[Installation](#installation) section below for greater detail.
+
+1. Visit
+[DriveCommandLine releases](https://gitlab.com/doctorfree/DriveCommandLine/-/releases)
+and download the latest release for your platform and architecture
+
+2. Install the release using the appropriate installation command, e.g. `apt`,
+`dpkg`, `rpm`, `yum`, `tar`, `unzip`, or other command supporting the format
+of the downloaded distribution archive
+
+3. Generate a Google Drive access token by executing the `gdrive about` command
+
+4. Configure a local DriveCommandLine folder to mirror Google Drive folders by
+executing the `gdlist` command
+
+5. Execute the `getfolderids` command
 
 ## Installation
 
