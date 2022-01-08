@@ -7,7 +7,7 @@
 \f[B]gdinfo\f[R] - show info for Google Drive files or folders
 .SH SYNOPSIS
 .TP
-\f[B]gdinfo\f[R] [ \f[B]-u\f[R] ] filename|foldername [file2|folder2 ...]
+\f[B]gdinfo\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-u\f[R] ] filename|foldername [file2|folder2 ...]
 Where \[aq]filename\[aq] or \[aq]foldername\[aq] are names of a Google
 Drive file or folder
 .SH DESCRIPTION
@@ -24,6 +24,27 @@ display info for Google Drive file \[aq]filename\[aq]
 .TP
 foldername
 display info for Google Drive folder \[aq]foldername\[aq]
+.SH FILES
+.TP
+\f[B]HOME/.gdrive/token_v2.json\f[R]
+The Google Drive authentication and access token.
+See gdrive(1) for more details.
+.TP
+\f[B]HOME/.gdrive/gdhome\f[R]
+The default DriveCommandLine configuration file used to set the location
+of the local Google Drive management folder.
+.TP
+\f[B]GDHOME/.folderid\f[R]
+Each of the folders in the local Google Drive management folder
+specified by \f[C]\[ti]/.gdrive/gdhome\f[R] is populated with the file
+\f[C].folderid\f[R] which contains the Google Drive ID for that folder.
+The command \f[C]getfolderids\f[R] is used to retrieve and populate the
+local Google Drive management folders.
+.SH ENVIRONMENT
+.TP
+\f[B]GDRIVE_CONFIG_DIR\f[R]
+If non-null the full pathname for an alternate configuration folder.
+Overridden by the \f[C]-c configdir\f[R] option.
 .SH EXAMPLES
 .TP
 \f[B]gdinfo README\f[R]

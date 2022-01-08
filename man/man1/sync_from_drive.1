@@ -8,7 +8,7 @@
 contents to a Google Drive folder
 .SH SYNOPSIS
 .TP
-\f[B]sync_from_drive\f[R] [ \f[B]-l\f[R] ] [ \f[B]-n\f[R] ] [ \f[B]-u\f[R] ] folder | path/to/folder Where:
+\f[B]sync_from_drive\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-l\f[R] ] [ \f[B]-n\f[R] ] [ \f[B]-u\f[R] ] folder | path/to/folder Where:
 Where \[aq]folder\[aq] or \[aq]path/to/folder\[aq] is the name of a
 Google Drive folder
 .SH DESCRIPTION
@@ -40,6 +40,27 @@ display usage message
 foldername
 sync Google Drive folder \f[C]foldername\f[R] to local folder
 \[aq]foldername\[aq]
+.SH FILES
+.TP
+\f[B]HOME/.gdrive/token_v2.json\f[R]
+The Google Drive authentication and access token.
+See gdrive(1) for more details.
+.TP
+\f[B]HOME/.gdrive/gdhome\f[R]
+The default DriveCommandLine configuration file used to set the location
+of the local Google Drive management folder.
+.TP
+\f[B]GDHOME/.folderid\f[R]
+Each of the folders in the local Google Drive management folder
+specified by \f[C]\[ti]/.gdrive/gdhome\f[R] is populated with the file
+\f[C].folderid\f[R] which contains the Google Drive ID for that folder.
+The command \f[C]getfolderids\f[R] is used to retrieve and populate the
+local Google Drive management folders.
+.SH ENVIRONMENT
+.TP
+\f[B]GDRIVE_CONFIG_DIR\f[R]
+If non-null the full pathname for an alternate configuration folder.
+Overridden by the \f[C]-c configdir\f[R] option.
 .SH EXAMPLES
 .TP
 \f[B]sync_from_drive MagicMirror\f[R]

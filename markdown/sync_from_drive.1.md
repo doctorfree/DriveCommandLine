@@ -9,7 +9,7 @@ date: January 04, 2022
 **sync_from_drive** - Sync a locally stored folder and its contents to a Google Drive folder
 
 # SYNOPSIS
-**sync_from_drive** [ **-l** ] [ **-n** ] [ **-u** ] folder | path/to/folder
+**sync_from_drive** [ **-c** configdir ] [ **-l** ] [ **-n** ] [ **-u** ] folder | path/to/folder
 Where:
 : Where 'folder' or 'path/to/folder' is the name of a Google Drive folder
 
@@ -37,6 +37,25 @@ can be synchronized again by reissuing the *sync_from_drive* command.
 
 foldername
 : sync Google Drive folder `foldername` to local folder 'foldername'
+
+# FILES
+**HOME/.gdrive/token_v2.json**
+: The Google Drive authentication and access token. See gdrive(1) for more details.
+
+**HOME/.gdrive/gdhome**
+: The default DriveCommandLine configuration file used to set the location of
+the local Google Drive management folder.
+
+**GDHOME/.folderid**
+: Each of the folders in the local Google Drive management folder specified by
+`~/.gdrive/gdhome` is populated with the file `.folderid` which contains the
+Google Drive ID for that folder. The command `getfolderids` is used to retrieve
+and populate the local Google Drive management folders.
+
+# ENVIRONMENT
+**GDRIVE_CONFIG_DIR**
+: If non-null the full pathname for an alternate configuration folder.
+Overridden by the `-c configdir` option.
 
 # EXAMPLES
 **sync_from_drive MagicMirror**

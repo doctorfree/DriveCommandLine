@@ -7,7 +7,7 @@
 \f[B]gdget\f[R] - download Google Drive files or folders
 .SH SYNOPSIS
 .TP
-\f[B]gdget\f[R] [ \f[B]-d\f[R] ] [ \f[B]-f\f[R] ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-p\f[R] path] [ \f[B]-o\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
+\f[B]gdget\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-d\f[R] ] [ \f[B]-f\f[R] ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-p\f[R] path] [ \f[B]-o\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
 Where \[aq]path/to/file\[aq] or \[aq]path/to/folder\[aq] are names of a
 Google Drive file or folder
 .SH DESCRIPTION
@@ -49,6 +49,27 @@ download Google Drive file \f[C]filename\f[R] to local folder
 path/to/foldername
 download Google Drive folder \f[C]foldername\f[R] and its contents to
 local folder \f[C]path/to\f[R]
+.SH FILES
+.TP
+\f[B]HOME/.gdrive/token_v2.json\f[R]
+The Google Drive authentication and access token.
+See gdrive(1) for more details.
+.TP
+\f[B]HOME/.gdrive/gdhome\f[R]
+The default DriveCommandLine configuration file used to set the location
+of the local Google Drive management folder.
+.TP
+\f[B]GDHOME/.folderid\f[R]
+Each of the folders in the local Google Drive management folder
+specified by \f[C]\[ti]/.gdrive/gdhome\f[R] is populated with the file
+\f[C].folderid\f[R] which contains the Google Drive ID for that folder.
+The command \f[C]getfolderids\f[R] is used to retrieve and populate the
+local Google Drive management folders.
+.SH ENVIRONMENT
+.TP
+\f[B]GDRIVE_CONFIG_DIR\f[R]
+If non-null the full pathname for an alternate configuration folder.
+Overridden by the \f[C]-c configdir\f[R] option.
 .SH EXAMPLES
 .TP
 \f[B]gdget README\f[R]
