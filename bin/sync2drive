@@ -79,7 +79,7 @@ usage() {
   printf "\n\t-l indicates list sync folders and exit"
   printf "\n\t-p indicates list sync folders and display path and shared status"
   printf "\n\t-m 'maxfiles' specifies maximum number of file ids to return"
-  printf "\n\t\t(default: 100)"
+  printf "\n\t\t(default: 1000)"
   printf "\n\t-n indicates tell me what you would do but don't do it"
   printf "\n\t-s indicates do not split path to identify name"
   printf "\n\t\t(useful when there is a slash in the folder name)"
@@ -87,7 +87,7 @@ usage() {
   exit 1
 }
 
-maxfiles=100
+maxfiles=1000
 delete="--delete-extraneous"
 listing=
 listpath=
@@ -261,7 +261,7 @@ else
       if [ ${children} -eq 0 ]
       then
         ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
-        ${GETFOLDERIDS} "${folder}"
+        ${GETFOLDERIDS} -m ${maxfiles} "${folder}"
       else
         # Need to perform some gymnastics here to create a sync folder
         # for an existing non-empty Google Drive folder
@@ -269,7 +269,7 @@ else
         # 1. Download the existing non-empty Google Drive folder
         tmpdir="tmp$$"
         [ -d ${tmpdir} ] && rm -rf ${tmpdir}
-        ${GDGET} -p ${tmpdir} "${folder}"
+        ${GDGET} -m ${maxfiles} -p ${tmpdir} "${folder}"
         # 2. Copy in extraneous files from the downloaded folder
         [ -d ${tmpdir}/"${folder}" ] || {
           echo "Download of ${folder} to ${tmpdir} failed"
@@ -300,5 +300,5 @@ else
     else
         ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
     fi
-    ${GETFOLDERIDS} "${folder}"
+    ${GETFOLDERIDS} -m ${maxfiles} "${folder}"
 fi

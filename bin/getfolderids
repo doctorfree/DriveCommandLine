@@ -85,7 +85,7 @@ get_gdhome() {
 ONLY=1
 TELL=
 VERB=
-maxfiles=500
+maxfiles=1000
 
 usage() {
   printf "\nUsage: getfolderids [-c configdir] [-f] [-m maxfiles] [-n] [-u] [-v] [path/to/folder]"
@@ -93,7 +93,7 @@ usage() {
   printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-f indicates 'files', also create a list of file IDs (slower)\n"
   printf "\n\t-m 'maxfiles' specifies the maximum number of files in query return"
-  printf "\n\t\t(default: 500)"
+  printf "\n\t\t(default: 1000)"
   printf "\n\t-n indicates tell me what you would do but don't do it"
   printf "\n\t-u displays this usage message"
   printf "\n\t-v indicates verbose mode\n"

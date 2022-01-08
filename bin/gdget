@@ -14,7 +14,6 @@ gdinst=`type -p gdrive`
 }
 
 GHOM=${HOME}/.gdrive
-GDOPTS="--no-header --absolute --max 100 --name-width 0"
 
 get_gdhome() {
   [ -f ${GHOM}/gdhome ] || {
@@ -70,11 +69,12 @@ get_gdhome() {
 }
 
 usage() {
-  printf "\nUsage: gdget [-c configdir] [-d] [-f] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]"
+  printf "\nUsage: gdget [-c configdir] [-d] [-f] [-m maxfiles] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]"
   printf "\nWhere:\n\t-n indicates tell me what you would do but don't do it"
   printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-d indicates delete remote file when download is successful"
   printf "\n\t-f indicates force overwrite of existing file"
+  printf "\n\t-m 'maxfiles' specifies maximum number of files returned in queries (default: 1000)"
   printf "\n\t-p 'path' specifies a download path"
   printf "\n\t-o indicates write file content to stdout"
   printf "\n\t-r indicates download directory and its contents recursively"
@@ -83,6 +83,7 @@ usage() {
   exit 1
 }
 
+maxfiles=1000
 tell=
 force=
 skip=
@@ -99,7 +100,7 @@ else
     export GDRIVE=gdrive
     export GETFOLDERIDS=getfolderids
 fi
-while getopts "c:dfp:norsu" flag; do
+while getopts "c:dfm:nop:rsu" flag; do
     case $flag in
         c)
             GHOM="${OPTARG}"
@@ -111,6 +112,9 @@ while getopts "c:dfp:norsu" flag; do
             ;;
         f)
             force="--force"
+            ;;
+        m)
+            maxfiles="${OPTARG}"
             ;;
         n)
             tell=1
@@ -134,6 +138,7 @@ while getopts "c:dfp:norsu" flag; do
 done
 shift $(( OPTIND - 1 ))
 
+GDOPTS="--no-header --absolute --max ${maxfiles} --name-width 0"
 SDIR=`pwd`
 get_gdhome
 
@@ -191,14 +196,14 @@ do
         echo "Would execute the command:"
         echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
         [ "${typ}" == "dir" ] && {
-          echo "${GETFOLDERIDS} ${dlpath}/${base}"
+          echo "${GETFOLDERIDS} -m ${maxfiles} ${dlpath}/${base}"
         }
       else
         ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
         [ "${typ}" == "dir" ] && {
-          ${GETFOLDERIDS} "${dlpath}/${base}"
+          ${GETFOLDERIDS} -m ${maxfiles} "${dlpath}/${base}"
         }
       fi
     done <<< `${GDRIVE} list ${GDOPTS} --query " parents in '${parentid}'"`
@@ -234,14 +239,14 @@ do
       echo "Would execute the command:"
       echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
       [ "${typ}" == "dir" ] && {
-        echo "${GETFOLDERIDS} ${dlpath}/${base}"
+        echo "${GETFOLDERIDS} -m ${maxfiles} ${dlpath}/${base}"
       }
     else
       ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
       [ "${typ}" == "dir" ] && {
-        ${GETFOLDERIDS} "${dlpath}/${base}"
+        ${GETFOLDERIDS} -m ${maxfiles} "${dlpath}/${base}"
       }
     fi
   fi
