@@ -152,7 +152,7 @@ Description: Google Drive Command Line Tools
 
   cd "${SRC}/${SRC_NAME}/dist/${PKG_NAME}_${PKG_VER}"
   echo "Creating compressed tar archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${platform} distribution"
-  ${SUDO} tar cf - usr | gzip -9 > ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}-dist.tar.gz
+  ${SUDO} tar --posix cf - usr | gzip -9 > ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}-dist.tar.gz
   [ "${GCI}" ] || {
     echo "Creating zip archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${platform} distribution"
     ${SUDO} zip -q -r ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}-dist.zip usr
