@@ -92,14 +92,17 @@ usage() {
 if [ "${GDRIVE_CONFIG_DIR}" ]
 then
     export GDRIVE="gdrive --config '${GDRIVE_CONFIG_DIR}'"
+    export GETFOLDERIDS="getfolderids -c '${GDRIVE_CONFIG_DIR}'"
 else
-    export GDRIVE=gdrive
+    export GDRIVE="gdrive"
+    export GETFOLDERIDS="getfolderids"
 fi
 while getopts "c:lnu" flag; do
     case $flag in
         c)
             GHOM="${OPTARG}"
             export GDRIVE="gdrive --config ${OPTARG}"
+            export GETFOLDERIDS="getfolderids -c ${OPTARG}"
             ;;
         l)
             listing=1
@@ -192,6 +195,8 @@ if [ "${TELL}" ]
 then
     echo "Would sync folder ${folder} from Google Drive"
     echo "${GDRIVE} sync download ${exists} ${folder}"
+    echo "${GETFOLDERIDS} ${folder}"
 else
     ${GDRIVE} sync download ${exists} "${folder}"
+    ${GETFOLDERIDS} "${folder}"
 fi
