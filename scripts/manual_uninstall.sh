@@ -26,12 +26,12 @@ DOCS="DriveCommandLine"
     cd /usr/local/bin
     sudo rm -f ${BINS}
 }
-[ -d /usr/share/man/man1 ] && {
-    cd /usr/share/man/man1
+[ -d /usr/local/share/man/man1 ] && {
+    cd /usr/local/share/man/man1
     sudo rm -f ${MANS}
 }
-[ -d /usr/share/doc ] && {
-    cd /usr/share/doc
+[ -d /usr/local/share/doc ] && {
+    cd /usr/local/share/doc
     sudo rm -rf ${DOCS}
 }
 

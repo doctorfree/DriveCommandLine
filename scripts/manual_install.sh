@@ -89,7 +89,7 @@ suffix=`echo ${PKG} | awk -F '.' ' { print $NF } '`
 case ${suffix} in
     gz)
         echo "Gzip compressed tar archive"
-        sudo tar -opxzf ${PKG} -C /
+        sudo tar -ompxzf ${PKG} -C /
         ;;
     zip)
         echo "Zip compressed archive"

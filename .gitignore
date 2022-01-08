@@ -1,6 +1,7 @@
-# Ignore dist and releases folders
+# Ignore develop, tmp, dist and releases folders
 dist/*
 releases/*
+develop/*
 tmp/*
 
 # vim files
