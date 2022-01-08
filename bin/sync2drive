@@ -71,8 +71,14 @@ maxfiles=100
 delete="--delete-extraneous"
 listing=
 listpath=
-export GDRIVE=gdrive
-export GDGET=gdget
+if [ "${GDRIVE_CONFIG_DIR}" ]
+then
+    export GDRIVE="gdrive --config '${GDRIVE_CONFIG_DIR}'"
+    export GDGET="gdget -c '${GDRIVE_CONFIG_DIR}'"
+else
+    export GDRIVE=gdrive
+    export GDGET=gdget
+fi
 while getopts "c:klm:npsu" flag; do
     case $flag in
         c)

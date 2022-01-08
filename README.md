@@ -34,6 +34,7 @@ documentation.
     1. [Debian package installation](#debian-package-installation)
     1. [RPM package installation](#rpm-package-installation)
     1. [Manual installation](#manual-installation)
+    1. [Installation from source](#installation-from-source)
 1. [Initial setup](#initial-setup)
     1. [Authentication and access](#authentication-and-access)
     1. [DriveCommandLine GDHOME local storage location](#drivecommandline-gdhome-local-storage-location)
@@ -193,6 +194,19 @@ cd /
 tar xzf /path/to/downloaded/DriveCommandLine_<version>-<release>.<arch>-dist.tar.gz
 ```
 
+### Installation from source
+
+To install DriveCommandLine from source the system must satisfy the requirements
+described below in the [Compile from source](#compile-from-source) section. Once
+the GO toolchain and appropriate packaging tools are installed:
+
+```bash
+git clone https://gitlab.com/doctorfree/DriveCommandLine.git
+cd DriveCommandLine
+./mkpkg
+./Install
+```
+
 ## Initial setup
 
 After installing DriveCommandLine it is necessary to perform a couple
@@ -208,10 +222,24 @@ The code is obtained by following the printed url and authenticating with the
 google account for the drive you want access to. This will create a token file
 inside the .gdrive folder in your home directory. Note that anyone with access
 to this file will also have access to your google drive.
-If you want to manage multiple drives you can use the global `--config` flag
-or set the environment variable `GDRIVE_CONFIG_DIR`.
-Example: `GDRIVE_CONFIG_DIR="/home/user/.gdrive-secondary" gdrive list`
+
+If you want to manage multiple drives you can use the global `-c configdir`
+flag or set the environment variable `GDRIVE_CONFIG_DIR`.
+
+**Example:** `GDRIVE_CONFIG_DIR="/home/user/.gdrive-secondary" gdrive list`
+
 You will be prompted for a new verification code if the folder does not exist.
+
+All of the DriveCommandLine commands obey these same rules. On first invocation
+they will prompt for initialization requirements if not previously set and
+multiple Google Drives can be managed via either the `-c configdir` flag or
+the environment variable `GDRIVE_CONFIG_DIR`.
+
+**Examples:**
+
+`GDRIVE_CONFIG_DIR="/home/user/.gdrive-secondary" getfolderids`
+
+`getfolderids -c /home/user/.gdrive-secondary`
 
 ### DriveCommandLine GDHOME local storage location
 
@@ -219,10 +247,9 @@ The DriveCommandLine utilities use the environment variable **GDHOME**
 to access the locally stored mirror of the Google Drive they manage.
 This variable is set in the file `$HOME/.gdrive/gdhome`
 
-To initialize this setting, if it was not done during the installation of
-the DriveCommandLine package, simply execute any of the DriveCommandLine
-utilities. If this variable has not previously been configured, the utility
-will prompt you for a path to your local Google Drive storage. For example,
+To initialize this setting execute any of the DriveCommandLine utilities.
+If this variable has not previously been configured, the utility will
+prompt you for a path to your local Google Drive storage. For example,
 execute the command `gdlist`. If no GDHOME has been set the command will
 prompt you to Initialize gdrive home to the current working directory.
 If that is where you wish to maintain local Google Drive storage then

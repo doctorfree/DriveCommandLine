@@ -69,7 +69,12 @@ usage() {
   exit 1
 }
 
-export GDRIVE=gdrive
+if [ "${GDRIVE_CONFIG_DIR}" ]
+then
+    export GDRIVE="gdrive --config '${GDRIVE_CONFIG_DIR}'"
+else
+    export GDRIVE=gdrive
+fi
 while getopts "c:lnu" flag; do
     case $flag in
         c)

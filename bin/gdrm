@@ -64,7 +64,12 @@ usage() {
   exit 1
 }
 
-export GDRIVE=gdrive
+if [ "${GDRIVE_CONFIG_DIR}" ]
+then
+    export GDRIVE="gdrive --config '${GDRIVE_CONFIG_DIR}'"
+else
+    export GDRIVE=gdrive
+fi
 while getopts "c:nrsu" flag; do
     case $flag in
         c)
