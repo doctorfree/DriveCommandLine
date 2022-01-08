@@ -134,6 +134,16 @@ executing the `gdlist` command
 
 5. Execute the `getfolderids` command
 
+Repeat steps 3-5 for any additional Google Drives you wish to manage.
+When adding an additional Google Drive, use the `-c configdir` option
+to `gdrive`, `gdlist`, and `getfolderids`. For example:
+
+`gdrive -c ~/.gdrive-secondary about`
+
+`gdlist -c ~/.gdrive-secondary`
+
+`getfolderids -c ~/.gdrive-secondary`
+
 ## Installation
 
 DriveCommandLine can be installed on Linux systems using
