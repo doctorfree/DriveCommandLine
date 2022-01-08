@@ -107,7 +107,7 @@ while getopts "c:klm:npsu" flag; do
             GHOM="${OPTARG}"
             export GDRIVE="gdrive --config ${OPTARG}"
             export GDGET="gdget -c ${OPTARG}"
-            export GETFOLDERIDS="getfolderids -c '${GDRIVE_CONFIG_DIR}'"
+            export GETFOLDERIDS="getfolderids -c '${OPTARG}'"
             ;;
         k)
             delete=
@@ -261,7 +261,6 @@ else
       if [ ${children} -eq 0 ]
       then
         ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
-        # echo "${FID}" > "${folder}"/.folderid
         ${GETFOLDERIDS} "${folder}"
       else
         # Need to perform some gymnastics here to create a sync folder
@@ -301,6 +300,5 @@ else
     else
         ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
     fi
-    # echo "${FID}" > "${folder}"/.folderid
     ${GETFOLDERIDS} "${folder}"
 fi
