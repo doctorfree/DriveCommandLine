@@ -686,15 +686,21 @@ Syncs the local folder `MagicMirror/config` and its contents to the Google Drive
 
 ## Limitations
 
-The initial release of DriveCommandLine includes only a few wrapper scripts.
-Future releases will expand the number and functionality of DriveCommandLine commands.
+A significant effort has been made to accomodate file and folder names that
+contain spaces. However, there may still be code paths that do no properly
+handle spaces in file or folder names. The whole issue of spaces
+in file and folder names arose as a result of Microsoft deciding to enable
+that feature and we have been struggling for the last quarter century to
+accomodate their decision. We should have just said no.
 
-The initial release of DriveCommandLine supports only a single Google Drive instance.
-Future releases will incorporate support for multiple Google Drive instances and
-switching between them.
+Google Drive is frequently used to store files and folders imported from
+Microsoft Windows platforms. Therefore, spaces in files and folders is an
+important feature to support. The latest testing of DriveCommandLine
+indicates that spaces in file and folder names works as expected.
 
-Currently there is no support for Microsoft Windows platforms outside of the untested
-use of the Microsoft Linux subsystem.
+Our recommendation is to avoid spaces in files and folder names but if you
+do see any problem with these utilities managing such files or folders, please
+raise an issue at https://gitlab.com/doctorfree/DriveCommandLine/-/issues
 
 ## Compile from source
 
