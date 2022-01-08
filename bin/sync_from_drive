@@ -32,7 +32,17 @@ get_gdhome() {
         read -p "Initializing gdrive home to ${HERE}. Ok ? ('Y'/'N'): " yn
         case $yn in
             [Yy]*)
-                [ -d ${GHOM} ] || mkdir -p ${GHOM}
+                [ -d ${GHOM} ] || {
+                  if [ -w ${GHOM}/.. ]
+                  then
+                    mkdir -p ${GHOM}
+                  else
+                    sudo mkdir -p ${GHOM}
+                    USER=$(stat -c '%U' ${HOME})
+                    GROUP=$(stat -c '%G' ${HOME})
+                    sudo chown ${USER}:${GROUP} ${GHOM}
+                  fi
+                }
                 echo "GDHOME=${HERE}" > ${GHOM}/gdhome
                 break
                 ;;
@@ -53,7 +63,17 @@ get_gdhome() {
   }
 
   . ${GHOM}/gdhome
-  [ -d ${GDHOME} ] || mkdir -p ${GDHOME}
+  [ -d ${GDHOME} ] || {
+    if [ -w ${GDHOME}/.. ]
+    then
+      mkdir -p ${GDHOME}
+    else
+      sudo mkdir -p ${GDHOME}
+      USER=$(stat -c '%U' ${HOME})
+      GROUP=$(stat -c '%G' ${HOME})
+      sudo chown ${USER}:${GROUP} ${GDHOME}
+    fi
+  }
   cd ${GDHOME}
 }
 
