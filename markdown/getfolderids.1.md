@@ -26,7 +26,7 @@ populated with their folder IDs in the file `.folderid` in each folder.
 : indicates 'files'. In addition to retrieving and populating the folder IDs, create a list of file IDs (slower)
 
 **-m** 'maxfiles'
-: specifies the maximum number of files in query return (default: 500)
+: specifies the maximum number of files in query return (default: 1000)
 
 **-n**
 : indicates tell me what you would do but don't do it

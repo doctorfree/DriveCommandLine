@@ -7,7 +7,7 @@
 \f[B]gdupload\f[R] - upload local files and folders to Google Drive
 .SH SYNOPSIS
 .TP
-\f[B]gdupload\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
+\f[B]gdupload\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-m\f[R] maxfiles ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
 Where \[aq]path/to/file\[aq] or \[aq]path/to/folder\[aq] are names of a
 local file or folder
 .SH DESCRIPTION
@@ -43,6 +43,9 @@ existing sync folder.
 .TP
 \f[B]-u\f[R]
 display a usage message
+.TP
+\f[B]-m\f[R] \[aq]maxfiles\[aq]
+specifies maximum number of file ids to return (default: 1000)
 .TP
 path/to/filename
 upload local file \f[C]filename\f[R] to Google Drive folder

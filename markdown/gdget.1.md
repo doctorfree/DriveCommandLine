@@ -9,7 +9,7 @@ date: January 04, 2022
 **gdget** - download Google Drive files or folders
 
 # SYNOPSIS
-**gdget** [ **-c** configdir ] [ **-d** ] [ **-f** ] [ **-n** ] [ **-r** ] [ **-s** ] [ **-p**  path] [ **-o** ] [ **-u** ] path/to/fileorfolder [file2 ...]
+**gdget** [ **-c** configdir ] [ **-d** ] [ **-f** ] [ **-m** maxfiles ] [ **-n** ] [ **-r** ] [ **-s** ] [ **-p**  path] [ **-o** ] [ **-u** ] path/to/fileorfolder [file2 ...]
 : Where 'path/to/file' or 'path/to/folder' are names of a Google Drive file or folder
 
 # DESCRIPTION
@@ -26,6 +26,9 @@ then it and its contents are downloaded recursively.
 
 **-f**
 : indicates force overwrite of existing file
+
+**-m** 'maxfiles'
+: specifies maximum number of file ids to return (default: 1000)
 
 **-p** 'path'
 : specifies a download path

@@ -47,7 +47,7 @@ upload to an existing sync folder.
 : indicates list sync folders and display path and shared status"
 
 **-m** 'maxfiles'
-: specifies maximum number of file ids to return (default: 100)
+: specifies maximum number of file ids to return (default: 1000)
 
 **-n**
 : indicates tell me what you would do but don't do it

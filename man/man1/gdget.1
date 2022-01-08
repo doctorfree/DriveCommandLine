@@ -7,7 +7,7 @@
 \f[B]gdget\f[R] - download Google Drive files or folders
 .SH SYNOPSIS
 .TP
-\f[B]gdget\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-d\f[R] ] [ \f[B]-f\f[R] ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-p\f[R] path] [ \f[B]-o\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
+\f[B]gdget\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-d\f[R] ] [ \f[B]-f\f[R] ] [ \f[B]-m\f[R] maxfiles ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-p\f[R] path] [ \f[B]-o\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
 Where \[aq]path/to/file\[aq] or \[aq]path/to/folder\[aq] are names of a
 Google Drive file or folder
 .SH DESCRIPTION
@@ -26,6 +26,9 @@ indicates delete remote file when download is successful
 .TP
 \f[B]-f\f[R]
 indicates force overwrite of existing file
+.TP
+\f[B]-m\f[R] \[aq]maxfiles\[aq]
+specifies maximum number of file ids to return (default: 1000)
 .TP
 \f[B]-p\f[R] \[aq]path\[aq]
 specifies a download path

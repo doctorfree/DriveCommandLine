@@ -18,7 +18,7 @@ and folders are listed, up to the maximum number specified by *maxfiles*.
 
 # COMMAND LINE OPTIONS
 **-m** 'maxfiles'
-: specifies the maximum number of files to list (default: 100)
+: specifies the maximum number of files to list (default: 1000)
 
 **-u**
 : display usage message

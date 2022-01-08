@@ -9,7 +9,7 @@ date: January 04, 2022
 **gdupload** - upload local files and folders to Google Drive
 
 # SYNOPSIS
-**gdupload** [ **-c** configdir ] [ **-u** ] path/to/fileorfolder [file2 ...]
+**gdupload** [ **-c** configdir ] [ **-m** maxfiles ] [ **-u** ] path/to/fileorfolder [file2 ...]
 : Where 'path/to/file' or 'path/to/folder' are names of a local file or folder
 
 # DESCRIPTION
@@ -38,6 +38,9 @@ upload to an existing sync folder.
 # COMMAND LINE OPTIONS
 **-u**
 : display a usage message
+
+**-m** 'maxfiles'
+: specifies maximum number of file ids to return (default: 1000)
 
 path/to/filename
 : upload local file `filename` to Google Drive folder `path/to`
