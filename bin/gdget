@@ -83,17 +83,6 @@ usage() {
   exit 1
 }
 
-# Some useful options for gdrive download
-#
-# gdrive [global] download [options] <fileId>
-#
-# -f, --force           Overwrite existing file
-# -s, --skip            Skip existing files
-# -r, --recursive       Download directory recursively, documents will be skipped
-# --path <path>         Download path
-# --delete              Delete remote file when download is successful
-# --stdout              Write file content to stdout
-
 tell=
 force=
 skip=
@@ -105,14 +94,17 @@ stdout=
 if [ "${GDRIVE_CONFIG_DIR}" ]
 then
     export GDRIVE="gdrive --config '${GDRIVE_CONFIG_DIR}'"
+    export GETFOLDERIDS="getfolderids -c '${GDRIVE_CONFIG_DIR}'"
 else
     export GDRIVE=gdrive
+    export GETFOLDERIDS=getfolderids
 fi
 while getopts "c:dfp:norsu" flag; do
     case $flag in
         c)
             GHOM="${OPTARG}"
             export GDRIVE="gdrive --config ${OPTARG}"
+            export GETFOLDERIDS="getfolderids -c ${OPTARG}"
             ;;
         d)
             delete="--delete"
@@ -186,9 +178,6 @@ do
         echo "Skipping download of '${path}'"
         continue
       }
-      [ "${typ}" == "dir" ] && {
-        [ "${recursive}" ] || continue
-      }
       base=`${GDRIVE} info ${id} | grep ^Name: | awk -F ':' ' { print $2 } '`
       base="$(echo -e "${base}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
       if [ "${custompath}" ]
@@ -201,10 +190,16 @@ do
       then
         echo "Would execute the command:"
         echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
+        [ "${typ}" == "dir" ] && {
+          echo "${GETFOLDERIDS} ${dlpath}/${base}"
+        }
       else
         ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
+        [ "${typ}" == "dir" ] && {
+          ${GETFOLDERIDS} "${dlpath}/${base}"
+        }
       fi
     done <<< `${GDRIVE} list ${GDOPTS} --query " parents in '${parentid}'"`
   else
@@ -228,7 +223,6 @@ do
       echo "Skipping download of '${file}'"
       continue
     }
-    [ "${typ}" == "dir" ] && recursive="--recursive"
     if [ "${custompath}" ]
     then
       dlpath="${custompath}"
@@ -239,10 +233,16 @@ do
     then
       echo "Would execute the command:"
       echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
+      [ "${typ}" == "dir" ] && {
+        echo "${GETFOLDERIDS} ${dlpath}/${base}"
+      }
     else
       ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
+      [ "${typ}" == "dir" ] && {
+        ${GETFOLDERIDS} "${dlpath}/${base}"
+      }
     fi
   fi
 done
