@@ -269,7 +269,7 @@ else
         # 1. Download the existing non-empty Google Drive folder
         tmpdir="tmp$$"
         [ -d ${tmpdir} ] && rm -rf ${tmpdir}
-        ${GDGET} -m ${maxfiles} -p ${tmpdir} "${folder}"
+        ${GDGET} -m ${maxfiles} -p ${tmpdir} -t "${folder}"
         # 2. Copy in extraneous files from the downloaded folder
         [ -d ${tmpdir}/"${folder}" ] || {
           echo "Download of ${folder} to ${tmpdir} failed"

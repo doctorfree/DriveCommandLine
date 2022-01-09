@@ -69,7 +69,7 @@ get_gdhome() {
 }
 
 usage() {
-  printf "\nUsage: gdget [-c configdir] [-d] [-f] [-m maxfiles] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]"
+  printf "\nUsage: gdget [-c configdir] [-m maxfiles] [-p path] [-dfnorstu] path/to/fileorfolder [file2 ...]"
   printf "\nWhere:\n\t-n indicates tell me what you would do but don't do it"
   printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
   printf "\n\t-d indicates delete remote file when download is successful"
@@ -79,6 +79,7 @@ usage() {
   printf "\n\t-o indicates write file content to stdout"
   printf "\n\t-r indicates download directory and its contents recursively"
   printf "\n\t-s indicates skip existing files"
+  printf "\n\t-t indicates skip updating folder ids for this download"
   printf "\n\t-u displays this usage message\n"
   exit 1
 }
@@ -91,6 +92,7 @@ recursive=
 custompath=
 delete=
 stdout=
+updids=1
 
 if [ "${GDRIVE_CONFIG_DIR}" ]
 then
@@ -100,7 +102,7 @@ else
     export GDRIVE=gdrive
     export GETFOLDERIDS=getfolderids
 fi
-while getopts "c:dfm:nop:rsu" flag; do
+while getopts "c:dfm:nop:rstu" flag; do
     case $flag in
         c)
             GHOM="${OPTARG}"
@@ -130,6 +132,9 @@ while getopts "c:dfm:nop:rsu" flag; do
             ;;
         s)
             skip="--skip"
+            ;;
+        t)
+            updids=
             ;;
         u)
             usage
@@ -195,14 +200,14 @@ do
       then
         echo "Would execute the command:"
         echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
-        [ "${typ}" == "dir" ] && {
+        [ "${typ}" == "dir" ] &&  [ "${updids}" ] {
           echo "${GETFOLDERIDS} -m ${maxfiles} ${dlpath}/${base}"
         }
       else
         ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
-        [ "${typ}" == "dir" ] && {
+        [ "${typ}" == "dir" ] &&  [ "${updids}" ] {
           ${GETFOLDERIDS} -m ${maxfiles} "${dlpath}/${base}"
         }
       fi
