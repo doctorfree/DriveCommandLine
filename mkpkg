@@ -92,7 +92,9 @@ do
   [ "${OPSM}" == "linux" ] && {
     echo "Building Debian and RPM packages for ${platform}"
     # If Linux then build Debian and RPM packages
-    ${SUDO} echo "Package: ${PKG}
+    # Need to use a pipe to tee to use sudo with this
+    # echo "bla bla" | sudo tee /path/to/control > /dev/null
+    echo "Package: ${PKG}
 Version: ${PKG_VER}-${PKG_REL}
 Section: misc
 Priority: optional
@@ -104,7 +106,8 @@ Build-Depends: debhelper (>= 11)
 Standards-Version: 4.1.3
 Homepage: https://gitlab.com/doctorfree/DriveCommandLine
 Description: Google Drive Command Line Tools
- Manage your Google Drive from the command line" > ${OUT_DIR}/DEBIAN/control
+ Manage your Google Drive from the command line" | \
+    ${SUDO} tee ${OUT_DIR}/DEBIAN/control > /dev/null
     ${SUDO} chmod 644 ${OUT_DIR}/DEBIAN/control
 
     cd dist
