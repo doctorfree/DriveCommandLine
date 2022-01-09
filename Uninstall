@@ -1,14 +1,21 @@
 #!/bin/bash
 
-plat=`uname -s`
-if [ "$plat" == "Darwin" ]
+platform=`uname -o`
+PLAT=`echo ${platform} | tr '[:upper:]' '[:lower:]'`
+echo ${PLAT} | grep '/' > /dev/null && {
+  PLAT=`echo ${PLAT} | awk -F '/' ' { print $2 } '`
+}
+notlinux=1
+echo ${PLAT} | grep linux > /dev/null && notlinux=
+
+if [ "${notlinux}" ]
 then
-    if [ -x ./macUninstall ]
-    then
-      ./macUninstall
-    else
-      echo "Mac OS X installation coming soon"
-    fi
+  if [ -x ./scripts/manual_uninstall.sh ]
+  then
+    ./scripts/manual_uninstall.sh
+  else
+    echo "Cannot locate scripts/manual_uninstall.sh removal script"
+  fi
 else
   debian=
   have_apt=`type -p apt`
