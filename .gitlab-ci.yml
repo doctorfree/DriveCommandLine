@@ -37,4 +37,4 @@ run-build:
     paths:
       - dist/*.deb
       - dist/*.rpm
-      - dist/*.gz
+      - dist/*.tgz
