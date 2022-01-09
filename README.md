@@ -860,6 +860,8 @@ pretty cool.
 
 ## Removal
 
+### Debian based Linux removal
+
 On Debian based Linux systems where the DriveCommandLine package was installed
 using the DriveCommandLine Debian format package, remove the DriveCommandLine
 package by executing the command:
@@ -878,6 +880,8 @@ If you wish to silence that warning and prevent the Debian packaging system from
 trying to remove `/usr/local` then install the
 [core-custom-local Debian package](https://gitlab.com/doctorfree/core-custom-local/-/releases).
 
+### RPM based Linux removal
+
 On RPM based Linux systems where the DriveCommandLine package was installed
 using the DriveCommandLine RPM format package, remove the DriveCommandLine
 package by executing the command:
@@ -890,3 +894,50 @@ or
     sudo rpm -e DriveCommandLine
 ```
 
+### Manual removal
+
+On all other systems where the DriveCommandLine package was installed manually,
+remove the DriveCommandLine package by executing the `scripts/manual_uninstall.sh`
+in the DriveCommandLine source repository. This script performs the following:
+
+```bash
+#!/bin/bash
+
+BINS="sync2drive \
+      getfolderids \
+      gdinfo \
+      gdlist \
+      gdrive \
+      gdupload \
+      gdget \
+      gdrm \
+      sync_from_drive"
+
+MANS="gdupload.1 \
+      gdrm.1 \
+      sync2drive.1 \
+      gdget.1 \
+      getfolderids.1 \
+      sync_from_drive.1 \
+      gdinfo.1 \
+      gdlist.1 \
+      gdrive.1"
+
+DOCS="DriveCommandLine"
+
+[ -d /usr/local/bin ] && {
+    cd /usr/local/bin
+    sudo rm -f ${BINS}
+}
+[ -d /usr/local/share/man/man1 ] && {
+    cd /usr/local/share/man/man1
+    sudo rm -f ${MANS}
+}
+[ -d /usr/local/share/doc ] && {
+    cd /usr/local/share/doc
+    sudo rm -rf ${DOCS}
+}
+
+echo "DriveCommandLine installation files and folders removed"
+exit 0
+```
