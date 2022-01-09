@@ -51,6 +51,7 @@ documentation.
     1. [Synopsis of DriveCommandLine commands](#synopsis-of-drivecommandline-commands)
     1. [Examples](#examples)
 1. [Limitations](#limitations)
+1. [Troubleshooting](#troubleshooting)
 1. [Compile from source](#compile-from-source)
     1. [Cool feature used by this repository](#cool-feature-used-by-this-repository)
 
@@ -732,6 +733,22 @@ Syncs the local folder `MagicMirror/config` and its contents to the Google Drive
 
 ## Limitations
 
+### Managing the same Google Drive from multiple computers
+
+The DriveCommandLine utilities manage Google Drives by maintaining a mirror
+of the Google Drive folders and their IDs. When DriveCommandLine commands
+are executed they often need to update these locally stored folder IDs.
+
+In situations where multiple computers are being used to manage the same
+Google Drive with DriveCommandLine, one system may update its locally
+stored folder IDs while other systems will remain in an unupdated state.
+
+Updating multiple systems running DriveCommandLine to manage the same
+Google Drive must be done manually. This can be accomplished by running
+the `getfolderids` command on each system that needs to be updated.
+
+### Spaces in file and folder names
+
 A significant effort has been made to accomodate file and folder names that
 contain spaces. However, there may still be code paths that do no properly
 handle spaces in file or folder names. The whole issue of spaces
@@ -747,6 +764,26 @@ indicates that spaces in file and folder names works as expected.
 Our recommendation is to avoid spaces in files and folder names but if you
 do see any problem with these utilities managing such files or folders, please
 raise an issue at https://gitlab.com/doctorfree/DriveCommandLine/-/issues
+
+## Troubleshooting
+
+Most problems with DriveCommandLine arise from mismatched or stale folder IDs
+stored locally. If you run into an issue the first thing to try is resync
+folder IDs by executing the `getfolderids` command. Rerun the command that
+previously exhibited an issue after syncing folder IDs.
+
+Another area that can be problematic is the management of multiple Google
+Drives. The DriveCommandLine utilities all accept a `-c configdir` option
+to specify which Google Drive to manage. Problems can arise when the
+configuration folder is not specified or is specified incorrectly.
+
+Except for the `gdrive` binary, all the DriveCommandLine commands are
+Bash scripts. To see what these scripts are executing when they run,
+execute the command with `bash -x ...`. For example, to view the execution
+of `gdget`, invoke it as `bash -x gdget ...`.
+
+Please report unresolved issues with DriveCommandLine by raising an issue
+at https://gitlab.com/doctorfree/DriveCommandLine/-/issues
 
 ## Compile from source
 

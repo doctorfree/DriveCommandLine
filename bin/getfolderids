@@ -225,6 +225,7 @@ else
   FIDBULIST="${BU_DIR}/file_ids.txt"
   DIRBULIST="${BU_DIR}/folder_ids.txt"
 fi
+
 if [ "${TELL}" ]
 then
   echo "Would backup any existing file id lists"
@@ -246,12 +247,15 @@ getids() {
   do
     thisID=`echo ${entry} | awk ' { print $1 } '`
     [ "${thisID}" ] || continue
-    thisPath=`${GDRIVE} info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
-    # Remove leading and trailing spaces
-    thisPath="$(echo -e "${thisPath}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
     thisType=`${GDRIVE} info ${thisID} | grep ^Mime: | awk -F ':' ' { print $2 } '`
     thisType="$(echo -e "${thisType}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     echo ${thisType} | grep folder > /dev/null && thisType="dir"
+    [ "${thisType}" != "dir" ] && [ "${ONLY}" ] && continue
+
+    thisPath=`${GDRIVE} info ${thisID} | grep ^Path: | awk -F ':' ' { print $2 } '`
+    # Remove leading and trailing spaces
+    thisPath="$(echo -e "${thisPath}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     if [ "${thisType}" == "dir" ]
     then
       if [ "${subdirIDs}" ]
@@ -270,14 +274,12 @@ getids() {
         echo "${thisID}" > "${thisPath}"/.folderid
       fi
     else
-      [ "${ONLY}" ] || {
-        if [ "${TELL}" ]
-        then
-          echo "Would add file id for ${thisPath} to file id list"
-        else
-          echo "${thisPath} = ${thisID}" >> ${FIDLIST}
-        fi
-      }
+      if [ "${TELL}" ]
+      then
+        echo "Would add file id for ${thisPath} to file id list"
+      else
+        echo "${thisPath} = ${thisID}" >> ${FIDLIST}
+      fi
     fi
   done <<< `${GDRIVE} list ${GDOPTS} --query " '$1' in parents"`
 }
