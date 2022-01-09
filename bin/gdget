@@ -200,15 +200,19 @@ do
       then
         echo "Would execute the command:"
         echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
-        [ "${typ}" == "dir" ] &&  [ "${updids}" ] {
-          echo "${GETFOLDERIDS} -m ${maxfiles} ${dlpath}/${base}"
+        [ "${typ}" == "dir" ] && {
+          [ "${updids}" ]  && {
+            echo "${GETFOLDERIDS} -m ${maxfiles} ${dlpath}/${base}"
+          }
         }
       else
         ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
-        [ "${typ}" == "dir" ] &&  [ "${updids}" ] {
-          ${GETFOLDERIDS} -m ${maxfiles} "${dlpath}/${base}"
+        [ "${typ}" == "dir" ] && {
+          [ "${updids}" ] {
+            ${GETFOLDERIDS} -m ${maxfiles} "${dlpath}/${base}"
+          }
         }
       fi
     done <<< `${GDRIVE} list ${GDOPTS} --query " parents in '${parentid}'"`
