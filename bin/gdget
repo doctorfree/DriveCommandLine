@@ -248,14 +248,18 @@ do
       echo "Would execute the command:"
       echo "${GDRIVE} download query --path ${dlpath} ${recursive} ${force} ${skip} ${delete} ${stdout} \" name = '${base}' and parents in '${parentid}'\""
       [ "${typ}" == "dir" ] && {
-        echo "${GETFOLDERIDS} -m ${maxfiles} ${dlpath}/${base}"
+        [ "${updids}" ] && {
+          echo "${GETFOLDERIDS} -m ${maxfiles} ${dlpath}/${base}"
+        }
       }
     else
       ${GDRIVE} download query --path "${dlpath}" \
            ${recursive} ${force} ${skip} ${delete} ${stdout} \
            " name = '${base}' and parents in '${parentid}'"
       [ "${typ}" == "dir" ] && {
-        ${GETFOLDERIDS} -m ${maxfiles} "${dlpath}/${base}"
+        [ "${updids}" ] && {
+          ${GETFOLDERIDS} -m ${maxfiles} "${dlpath}/${base}"
+        }
       }
     fi
   fi
