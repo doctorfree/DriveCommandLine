@@ -338,6 +338,15 @@ any of the following commands (click to view the man page online):
 
 ## Motivation
 
+Google Drive is a ubiquitous cloud storage and synchronization service which
+offers anyone with a free GMail account 15GB of free cloud storage through
+Google One. However, managing a Google Drive can be difficult, especially
+for those users with multiple GMail accounts and Google Drives.
+
+This package intends to provide Google Drive management via the command line
+in a manner that eases the burden of Google Drive management and provides
+a facility to automate many Google Drive management tasks.
+
 ### Introduction to Using the Command Line
 
 The command line has a long and storied history in computing. Read some of that
