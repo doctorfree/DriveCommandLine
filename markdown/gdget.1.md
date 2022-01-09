@@ -9,7 +9,7 @@ date: January 04, 2022
 **gdget** - download Google Drive files or folders
 
 # SYNOPSIS
-**gdget** [ **-c** configdir ] [ **-d** ] [ **-f** ] [ **-m** maxfiles ] [ **-n** ] [ **-r** ] [ **-s** ] [ **-p**  path] [ **-o** ] [ **-u** ] path/to/fileorfolder [file2 ...]
+**gdget** [ **-c** configdir ] [ **-d** ] [ **-f** ] [ **-m** maxfiles ] [ **-n** ] [ **-r** ] [ **-s** ] [ **-p**  path] [ **-o** ] [ **-t** ] [ **-u** ] path/to/fileorfolder [file2 ...]
 : Where 'path/to/file' or 'path/to/folder' are names of a Google Drive file or folder
 
 # DESCRIPTION
@@ -41,6 +41,9 @@ then it and its contents are downloaded recursively.
 
 **-s**
 : indicates skip existing files
+
+**-t**
+: indicates skip retrieving and updating folder IDs (used when downloading temporary folders)
 
 **-u**
 : displays this usage message

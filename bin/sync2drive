@@ -69,7 +69,7 @@ get_gdhome() {
 }
 
 TELL=
-splitpath=1
+diffdown=
 
 usage() {
   printf "\nUsage: sync2drive [-c configdir] [-k] [-l] [-m maxfiles] [-n] [-s] [-u] folder|path/to/folder"
@@ -81,8 +81,7 @@ usage() {
   printf "\n\t-m 'maxfiles' specifies maximum number of file ids to return"
   printf "\n\t\t(default: 1000)"
   printf "\n\t-n indicates tell me what you would do but don't do it"
-  printf "\n\t-s indicates do not split path to identify name"
-  printf "\n\t\t(useful when there is a slash in the folder name)"
+  printf "\n\t-s indicates preserve extraneous files in existing sync folder"
   printf "\n\t-u displays this usage message\n"
   exit 1
 }
@@ -126,7 +125,7 @@ while getopts "c:klm:npsu" flag; do
             TELL=1
             ;;
         s)
-            splitpath=
+            diffdown=1
             ;;
         u)
             usage
@@ -267,29 +266,32 @@ else
         # for an existing non-empty Google Drive folder
         # Trick the system by:
         # 1. Download the existing non-empty Google Drive folder
-        tmpdir="tmp$$"
-        [ -d ${tmpdir} ] && rm -rf ${tmpdir}
-        ${GDGET} -m ${maxfiles} -p ${tmpdir} -t "${folder}"
-        # 2. Copy in extraneous files from the downloaded folder
-        [ -d ${tmpdir}/"${folder}" ] || {
-          echo "Download of ${folder} to ${tmpdir} failed"
-          echo "Unable to create sync folder for ${folder}"
-          exit 1
+        [ "${diffdown}" ] && {
+          tmpdir="tmp$$"
+          [ -d ${tmpdir} ] && rm -rf ${tmpdir}
+          mkdir ${tmpdir}
+          ${GDGET} -m ${maxfiles} -p ${tmpdir} -r -t "${folder}"
+          # 2. Copy in extraneous files from the downloaded folder
+          [ -d ${tmpdir}/"${folder}" ] || {
+            echo "Download of ${folder} to ${tmpdir} failed"
+            echo "Unable to create sync folder for ${folder}"
+            exit 1
+          }
+          for content in ${tmpdir}/${base}/* ${tmpdir}/${base}/.?*
+          do
+            [ "${content}" == "${tmpdir}/${base}/*" ] && continue
+            [ "${content}" == "${tmpdir}/${base}/.?*" ] && continue
+            [ "${content}" == "${tmpdir}/${base}/.." ] && continue
+            dlsub=`basename "${content}"`
+            if [ -d "${content}" ]
+            then
+              [ -d "${folder}/${dlsub}" ] || cp -a "${content}" "${folder}/${dlsub}"
+            else
+              [ -f "${folder}/${dlsub}" ] || cp "${content}" "${folder}/${dlsub}"
+            fi
+          done
+          rm -rf ${tmpdir}
         }
-        for content in ${tmpdir}/${base}/* ${tmpdir}/${base}/.?*
-        do
-          [ "${content}" == "${tmpdir}/${base}/*" ] && continue
-          [ "${content}" == "${tmpdir}/${base}/.?*" ] && continue
-          [ "${content}" == "${tmpdir}/${base}/.." ] && continue
-          dlsub=`basename "${content}"`
-          if [ -d "${content}" ]
-          then
-            [ -d "${folder}/${dlsub}" ] || cp -a "${content}" "${folder}/${dlsub}"
-          else
-            [ -f "${folder}/${dlsub}" ] || cp "${content}" "${folder}/${dlsub}"
-          fi
-        done
-        rm -rf ${tmpdir}
         # 3. Remove the existing Google Drive folder
         ${GDRIVE} delete --recursive ${FID}
         # 4. Create a new Google Drive folder

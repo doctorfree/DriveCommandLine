@@ -7,7 +7,7 @@
 \f[B]gdget\f[R] - download Google Drive files or folders
 .SH SYNOPSIS
 .TP
-\f[B]gdget\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-d\f[R] ] [ \f[B]-f\f[R] ] [ \f[B]-m\f[R] maxfiles ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-p\f[R] path] [ \f[B]-o\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
+\f[B]gdget\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-d\f[R] ] [ \f[B]-f\f[R] ] [ \f[B]-m\f[R] maxfiles ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-p\f[R] path] [ \f[B]-o\f[R] ] [ \f[B]-t\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
 Where \[aq]path/to/file\[aq] or \[aq]path/to/folder\[aq] are names of a
 Google Drive file or folder
 .SH DESCRIPTION
@@ -41,6 +41,10 @@ indicates download directory and its contents recursively
 .TP
 \f[B]-s\f[R]
 indicates skip existing files
+.TP
+\f[B]-t\f[R]
+indicates skip retrieving and updating folder IDs (used when downloading
+temporary folders)
 .TP
 \f[B]-u\f[R]
 displays this usage message

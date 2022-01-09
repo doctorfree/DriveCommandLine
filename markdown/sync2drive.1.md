@@ -53,7 +53,7 @@ upload to an existing sync folder.
 : indicates tell me what you would do but don't do it
 
 **-s**
-: indicates do not split path to identify name (useful when there is a slash in the folder name)
+: indicates preserve extraneous files in existing sync folder (can be slow)
 
 **-u**
 : display usage message
