@@ -157,9 +157,8 @@ Description: Google Drive Command Line Tools
   echo "Creating compressed tar archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${platform} distribution"
   ${SUDO} tar --format=pax --no-xattrs -cf - usr | gzip -9 > ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}.tgz
   have_zip=`type -p zip`
-  [ "${have_zip}" ] || {
-    echo "Creating zip archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${platform} distribution"
-    ${SUDO} zip -q -r ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}.zip usr
-  }
+  [ "${have_zip}" ] || ${SUDO} apt-get install zip -y
+  echo "Creating zip archive of ${PKG_NAME} ${PKG_VER}-${PKG_REL}.${platform} distribution"
+  ${SUDO} zip -q -r ../${PKG_NAME}_${PKG_VER}-${PKG_REL}.${platform}.zip usr
   cd "${SRC}/${SRC_NAME}"
 done
