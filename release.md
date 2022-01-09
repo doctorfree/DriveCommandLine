@@ -65,13 +65,11 @@ Download the latest compressed tar archive release for your platform
 from the latest
 [DriveCommandLine Releases](https://gitlab.com/doctorfree/DriveCommandLine/-/releases).
 
-As root, extract the archive from the root directory. For example, to install
+As root, extract the archive. For example, to install on Mac OS X
 from the gzip'd tar archive:
 
 ```bash
-sudo -i
-cd /
-tar xzf /path/to/downloaded/DriveCommandLine_2.1.1-1-dist.tar.gz
+tar xzf /path/to/downloaded/DriveCommandLine_2.1.1-1.darwin_amd64.tgz
 ```
 
 ## Authentication and access

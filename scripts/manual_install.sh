@@ -85,22 +85,22 @@ suffix=`echo ${PKG} | awk -F '.' ' { print $NF } '`
 # typ=`echo ${PKG} | awk -F '.' ' { print $(NF-1) } '`
 # format="${typ}.${suffix}"
 
-# Assumes we only distribute *.tar.gz, *.zip, *.rpm, *.deb
+# Assumes we only distribute *.tgz, *.zip, *.rpm, *.deb
 case ${suffix} in
-    gz)
-        echo "Gzip compressed tar archive"
+    tgz)
+        echo "Installing Gzip compressed tar archive"
         sudo tar -ompxzf ${PKG} -C /
         ;;
     zip)
-        echo "Zip compressed archive"
+        echo "Installing Zip compressed archive"
         sudo unzip ${PKG} -d /
         ;;
     deb)
-        echo "Debian format installation package"
+        echo "Installing Debian format installation package"
         install_package
         ;;
     rpm)
-        echo "RPM format installation package"
+        echo "Installing RPM format installation package"
         install_package
         ;;
     *)

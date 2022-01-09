@@ -28,17 +28,17 @@ PKG_SELECTED=
 . "${SRC}/${SRC_NAME}/VERSION"
 PKG_VER=${VERSION}
 PKG_REL=${RELEASE}
+PKG_PRE="${PKG_NAME}_${PKG_VER}-${PKG_REL}"
 
 get_available_packages() {
-  for pkgs in ${SRC}/${SRC_NAME}/releases/${PKG_VER}/*linux_${ARCH}.${SUF}
+  for pkgs in ${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_PRE}.${PLAT}_${ARCH}*
   do
-    [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/${PKG_VER}/*linux_${ARCH}.${SUF}" ] || {
-      for pkg in ${pkgs}
-      do
-        pkgname=`basename ${pkg} | sed -e "s/_${PKG_VER}-${PKG_REL}.linux_${ARCH}.${SUF}//"` 
-        PKG_AVAILABLE="${PKG_AVAILABLE} ${pkgname}"
-      done
-    }
+    [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_PRE}.${PLAT}_${ARCH}*" ] && continue
+    for pkg in ${pkgs}
+    do
+      pkgname=`basename ${pkg} | sed -e "s/_${PKG_VER}-${PKG_REL}.${PLAT}_${ARCH}.${SUF}//"` 
+      PKG_AVAILABLE="${PKG_AVAILABLE} ${pkgname}"
+    done
   done
   PKG_AVAILABLE=`echo $PKG_AVAILABLE | sed -e "s/^ //"`
 }
@@ -66,15 +66,19 @@ install_selected() {
   PKG_SELECTED=`echo $PKG_SELECTED | sed -e "s/^ //"`
 }
 
-plat=`uname -s`
-if [ "$plat" == "Darwin" ]
+platform=`uname -o`
+PLAT=`echo ${platform} | tr '[:upper:]' '[:lower:]'`
+echo ${PLAT} | grep '/' > /dev/null && {
+  PLAT=`echo ${PLAT} | awk -F '/' ' { print $2 } '`
+}
+notlinux=1
+echo ${PLAT} | grep linux > /dev/null && notlinux=
+
+if [ "${notlinux}" ]
 then
-  if [ -x ./macInstall ]
-  then
-    ./macInstall
-  else
-    echo "Mac OS X installation coming soon"
-  fi
+  ARCH=`uname -m`
+  [ "${ARCH}" == "x86_64" ] && ARCH="amd64"
+  SUF="tgz"
 else
   debian=
   have_apt=`type -p apt`
@@ -94,15 +98,16 @@ else
     ARCH=`rpm --eval '%{_arch}'`
   fi
   [ "${ARCH}" == "x86_64" ] && ARCH="amd64"
+fi
 
-  get_available_packages
+get_available_packages
 
-  [ "$PKG_AVAILABLE}" ] || {
+[ "$PKG_AVAILABLE}" ] || {
     echo "No packages for version ${PKG_VER} are currently available. Exiting."
     exit 1
-  }
+}
 
-  [ "$1" ] && {
+[ "$1" ] && {
     # If invoked with -i argument, present a menu of options to select from
     if [ "$1" == "-i" ]
     then
@@ -143,22 +148,22 @@ else
     else
       PKG_NAMES="$*"
     fi
-  }
+}
 
-  [ "${PKG_NAMES}" ] || {
+[ "${PKG_NAMES}" ] || {
     echo "No valid Package names specified. Exiting."
     exit 1
-  }
+}
 
-  for PKG_NAME in ${PKG_NAMES}
-  do
-    PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.linux_${ARCH}.${SUF}"
+for PKG_NAME in ${PKG_NAMES}
+do
+    PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_PRE}.${PLAT}_${ARCH}.${SUF}"
     [ -f "${PKG}" ] || {
-      PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${ARCH}.${SUF}"
+      PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_PRE}.${ARCH}.${SUF}"
       [ -f "${PKG}" ] || {
-        PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF}"
+        PKG="${SRC}/${SRC_NAME}/releases/${PKG_VER}/${PKG_PRE}.${SUF}"
         [ -f "${PKG}" ] || {
-          echo "${PKG_NAME}_${PKG_VER}-${PKG_REL}.${SUF} not found."
+          echo "${PKG_PRE}.${SUF} not found."
           for pkgs in ${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}
           do
             [ "${pkgs}" == "${SRC}/${SRC_NAME}/releases/*/${PKG_NAME}_*.${SUF}" ] || {
@@ -172,32 +177,44 @@ else
       }
     }
 
-    echo "Installing ${PKG}"
-    if [ "${debian}" ]
+    if [ "${notlinux}" ]
     then
-      if [ "${have_apt}" ]
+      MAN_INST="${SRC}/${SRC_NAME}/scripts/manual_install.sh"
+      echo "Installing Gzip compressed tar archive"
+      if [ -x "${MAN_INST}" ]
       then
-        sudo apt install "${PKG}"
+        "${MAN_INST}" "${PKG}"
       else
-        if [ "${have_dpkg}" ]
-        then
-          sudo dpkg -i "${PKG}"
-        else
-          echo "Cannot locate either apt or dpkg to install. Skipping."
-        fi
+        sudo tar -ompxzf "${PKG}" -C /
       fi
     else
-      if [ "${have_yum}" ]
+      if [ "${debian}" ]
       then
-        sudo yum localinstall "${PKG}"
-      else
-        if [ "${have_rpm}" ]
+        echo "Installing Debian format installation package"
+        if [ "${have_apt}" ]
         then
-          sudo rpm -i "${PKG}"
+          sudo apt install "${PKG}"
         else
-          echo "Cannot locate either yum or rpm to install. Skipping."
+          if [ "${have_dpkg}" ]
+          then
+            sudo dpkg -i "${PKG}"
+          else
+            echo "Cannot locate either apt or dpkg to install. Skipping."
+          fi
+        fi
+      else
+        echo "Installing RPM format installation package"
+        if [ "${have_yum}" ]
+        then
+          sudo yum localinstall "${PKG}"
+        else
+          if [ "${have_rpm}" ]
+          then
+            sudo rpm -i "${PKG}"
+          else
+            echo "Cannot locate either yum or rpm to install. Skipping."
+          fi
         fi
       fi
     fi
-  done
-fi
+done

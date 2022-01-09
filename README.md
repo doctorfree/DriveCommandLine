@@ -232,13 +232,11 @@ Download the latest compressed tar archive release for your platform
 from the latest
 [DriveCommandLine Releases](https://gitlab.com/doctorfree/DriveCommandLine/-/releases).
 
-As root, extract the archive from the root directory. For example, to install
+As root, extract the archive. For example, to install
 from a gzip'd tar archive:
 
 ```bash
-sudo -i
-cd /
-tar xzf /path/to/downloaded/DriveCommandLine_<version>-<release>.<arch>-dist.tar.gz
+sudo tar -ompxzf /path/to/DriveCommandLine_<version>-<release>.<os>_<arch>.tgz -C /
 ```
 
 ### Installation from source
@@ -253,6 +251,12 @@ cd DriveCommandLine
 ./mkpkg
 ./Install
 ```
+
+The `./Install` script attempts to derive the platform operating system and
+architecture and install the appropriate distribution archive. If it fails to
+find a matching distribution archive it will list what it thinks are packages
+available for your platform. Follow the instructions above for a manual
+installation using the appropriate distribution archive for your platform.
 
 ## Initial setup
 
