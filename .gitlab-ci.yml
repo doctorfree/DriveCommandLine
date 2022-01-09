@@ -38,3 +38,4 @@ run-build:
       - dist/*.deb
       - dist/*.rpm
       - dist/*.tgz
+      - dist/*.zip
