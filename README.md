@@ -54,6 +54,7 @@ documentation.
 1. [Troubleshooting](#troubleshooting)
 1. [Compile from source](#compile-from-source)
     1. [Cool feature used by this repository](#cool-feature-used-by-this-repository)
+1. [Removal](#removal)
 
 ## Overview
 The DriveCommandLine package includes gdrive, a command line utility for
@@ -856,3 +857,36 @@ command:
 during package creation. That is, I am able to build and install from a remote
 repository during this repository's packaging process. I thought that was
 pretty cool.
+
+## Removal
+
+On Debian based Linux systems where the DriveCommandLine package was installed
+using the DriveCommandLine Debian format package, remove the DriveCommandLine
+package by executing the command:
+
+```bash
+    sudo apt remove drivecommandline
+```
+or
+```bash
+    sudo dpkg -r drivecommandline
+```
+
+**Note:** Removal may issue a warning about removing `/usr/local` and other
+folders within `/usr/local`. This is an artifact of the Debian packaging system.
+If you wish to silence that warning and prevent the Debian packaging system from
+trying to remove `/usr/local` then install the
+[core-custom-local Debian package](https://gitlab.com/doctorfree/core-custom-local/-/releases).
+
+On RPM based Linux systems where the DriveCommandLine package was installed
+using the DriveCommandLine RPM format package, remove the DriveCommandLine
+package by executing the command:
+
+```bash
+    sudo yum remove DriveCommandLine
+```
+or
+```bash
+    sudo rpm -e DriveCommandLine
+```
+
