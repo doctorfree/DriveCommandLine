@@ -93,9 +93,9 @@ listpath=
 if [ "${GDRIVE_CONFIG_DIR}" ]
 then
     GHOM="${GDRIVE_CONFIG_DIR}"
-    export GDRIVE="gdrive --config '${GDRIVE_CONFIG_DIR}'"
-    export GDGET="gdget -c '${GDRIVE_CONFIG_DIR}'"
-    export GETFOLDERIDS="getfolderids -c '${GDRIVE_CONFIG_DIR}'"
+    export GDRIVE="gdrive --config ${GDRIVE_CONFIG_DIR}"
+    export GDGET="gdget -c ${GDRIVE_CONFIG_DIR}"
+    export GETFOLDERIDS="getfolderids -c ${GDRIVE_CONFIG_DIR}"
 else
     export GDRIVE=gdrive
     export GDGET=gdget
@@ -261,44 +261,59 @@ else
       if [ ${children} -eq 0 ]
       then
         ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
-        ${GETFOLDERIDS} -m ${maxfiles} "${folder}"
       else
-        # Need to perform some gymnastics here to create a sync folder
-        # for an existing non-empty Google Drive folder
-        # Trick the system by:
-        # 1. Download the existing non-empty Google Drive folder
-        [ "${diffdown}" ] && {
-          tmpdir="tmp$$"
-          [ -d ${tmpdir} ] && rm -rf ${tmpdir}
-          mkdir ${tmpdir}
-          ${GDGET} -m ${maxfiles} -p ${tmpdir} -r -t "${folder}"
-          # 2. Copy in extraneous files from the downloaded folder
-          [ -d ${tmpdir}/"${folder}" ] || {
-            echo "Download of ${folder} to ${tmpdir} failed"
-            echo "Unable to create sync folder for ${folder}"
-            exit 1
+        # Check to see if this is a sync folder
+        is_sync_folder=
+        while read match
+        do
+            syncid=`echo ${match} | awk ' { print $1 } '`
+            [ "${syncid}" == "${exists}" ] && {
+              is_sync_folder=1
+              break
+            }
+        done <<< `${GDRIVE} sync list --no-header`
+
+        if [ "${is_sync_folder}" ]
+        then
+          ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
+        else
+          # Need to perform some gymnastics here to create a sync folder
+          # for an existing non-empty Google Drive folder
+          # Trick the system by:
+          # 1. Download the existing non-empty Google Drive folder
+          [ "${diffdown}" ] && {
+            tmpdir="tmp$$"
+            [ -d ${tmpdir} ] && rm -rf ${tmpdir}
+            mkdir ${tmpdir}
+            ${GDGET} -m ${maxfiles} -p ${tmpdir} -r -t "${folder}"
+            # 2. Copy in extraneous files from the downloaded folder
+            [ -d ${tmpdir}/"${folder}" ] || {
+              echo "Download of ${folder} to ${tmpdir} failed"
+              echo "Unable to create sync folder for ${folder}"
+              exit 1
+            }
+            for content in ${tmpdir}/${base}/* ${tmpdir}/${base}/.?*
+            do
+              [ "${content}" == "${tmpdir}/${base}/*" ] && continue
+              [ "${content}" == "${tmpdir}/${base}/.?*" ] && continue
+              [ "${content}" == "${tmpdir}/${base}/.." ] && continue
+              dlsub=`basename "${content}"`
+              if [ -d "${content}" ]
+              then
+                [ -d "${folder}/${dlsub}" ] || cp -a "${content}" "${folder}/${dlsub}"
+              else
+                [ -f "${folder}/${dlsub}" ] || cp "${content}" "${folder}/${dlsub}"
+              fi
+            done
+            rm -rf ${tmpdir}
           }
-          for content in ${tmpdir}/${base}/* ${tmpdir}/${base}/.?*
-          do
-            [ "${content}" == "${tmpdir}/${base}/*" ] && continue
-            [ "${content}" == "${tmpdir}/${base}/.?*" ] && continue
-            [ "${content}" == "${tmpdir}/${base}/.." ] && continue
-            dlsub=`basename "${content}"`
-            if [ -d "${content}" ]
-            then
-              [ -d "${folder}/${dlsub}" ] || cp -a "${content}" "${folder}/${dlsub}"
-            else
-              [ -f "${folder}/${dlsub}" ] || cp "${content}" "${folder}/${dlsub}"
-            fi
-          done
-          rm -rf ${tmpdir}
-        }
-        # 3. Remove the existing Google Drive folder
-        ${GDRIVE} delete --recursive ${FID}
-        # 4. Create a new Google Drive folder
-        FID=`${GDRIVE} mkdir --parent ${parentid} "${base}" | awk ' { print $2 } '`
-        # 5. Sync to the new folder
-        ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
+          # 3. Remove the existing Google Drive folder
+          ${GDRIVE} delete --recursive ${FID}
+          # 4. Create a new Google Drive folder
+          FID=`${GDRIVE} mkdir --parent ${parentid} "${base}" | awk ' { print $2 } '`
+          # 5. Sync to the new folder
+          ${GDRIVE} sync upload ${delete} "${folder}" ${FID}
+        fi
       fi
     else
         ${GDRIVE} sync upload ${delete} "${folder}" ${FID}

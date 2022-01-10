@@ -92,8 +92,8 @@ usage() {
 if [ "${GDRIVE_CONFIG_DIR}" ]
 then
     GHOM="${GDRIVE_CONFIG_DIR}"
-    export GDRIVE="gdrive --config '${GDRIVE_CONFIG_DIR}'"
-    export GETFOLDERIDS="getfolderids -c '${GDRIVE_CONFIG_DIR}'"
+    export GDRIVE="gdrive --config ${GDRIVE_CONFIG_DIR}"
+    export GETFOLDERIDS="getfolderids -c ${GDRIVE_CONFIG_DIR}"
 else
     export GDRIVE="gdrive"
     export GETFOLDERIDS="getfolderids"
