@@ -3,28 +3,29 @@
 #
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
-image: golang:latest
-
-variables:
-  # Please edit to your GitLab project
-  REPO_NAME: gitlab.com/doctorfree/DriveCommandLine
-
-# The problem is that to be able to use go get, one needs to put
-# the repository in the $GOPATH. So for example if your gitlab domain
-# is gitlab.com, and that your repository is namespace/project, and
-# the default GOPATH being /go, then you'd need to have your
-# repository in /go/src/gitlab.com/namespace/project
-# Thus, making a symbolic link corrects this.
-before_script:
-  - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
-  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
-  - cd $GOPATH/src/$REPO_NAME
-
 stages:
   - build
+  - release
 
-run-build:  
+build:  
   stage: build
+  image: golang:latest
+  variables:
+    # Please edit to your GitLab project
+    REPO_NAME: gitlab.com/doctorfree/DriveCommandLine
+  # The problem is that to be able to use go get, one needs to put
+  # the repository in the $GOPATH. So for example if your gitlab domain
+  # is gitlab.com, and that your repository is namespace/project, and
+  # the default GOPATH being /go, then you'd need to have your
+  # repository in /go/src/gitlab.com/namespace/project
+  # Thus, making a symbolic link corrects this.
+  before_script:
+    - echo $CI_JOB_ID
+    - echo BUILD_JOB_ID=$CI_JOB_ID >> build.env
+    - cat VERSION >> build.env
+    - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
+    - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
+    - cd $GOPATH/src/$REPO_NAME
   script:
     - ./mkpkg
 
@@ -39,3 +40,37 @@ run-build:
       - dist/*.rpm
       - dist/*.tgz
       - dist/*.zip
+    reports:
+      dotenv: build.env
+
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo 'running release_job'
+    - echo 'Previous Job ID:'
+    - echo $BUILD_JOB_ID
+    - echo 'VERSION:'
+    - echo $VERSION
+    - echo 'RELEASE:'
+    - echo $RELEASE
+  # Specifying that this job requires artifacts from the previous job to succeed
+  needs:
+    - job: build
+      artifacts: true
+  release:
+    name: 'DriveCommandLine Version $VERSION release $RELEASE'
+    description: 'Created using the release-cli'
+    tag_name: 'v${VERSION}r${RELEASE}'
+    assets:
+      links:
+        - name: 'Linux 386 Debian format installation package'
+          url: 'https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_386.deb'
+        - name: 'Linux amd64 Debian format installation package'
+          url: 'https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_amd64.deb'
+        - name: 'Linux 386 RPM format installation package'
+          url: 'https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_386.rpm'
+        - name: 'Linux amd64 RPM format installation package'
+          url: 'https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_amd64.rpm'
+  only:
+    - tags
