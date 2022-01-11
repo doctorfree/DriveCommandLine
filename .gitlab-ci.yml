@@ -61,16 +61,16 @@ release:
   release:
     name: "DriveCommandLine Version $VERSION release $RELEASE"
     description: 'Created using the release-cli'
-    tag_name: "v${VERSION}r${RELEASE}"
+    tag_name: v${VERSION}r${RELEASE}
     assets:
       links:
         - name: 'Linux 386 Debian format installation package'
-          url: "https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_386.deb"
+          url: https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_386.deb
         - name: 'Linux amd64 Debian format installation package'
-          url: "https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_amd64.deb"
+          url: https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_amd64.deb
         - name: 'Linux 386 RPM format installation package'
-          url: "https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_386.rpm"
+          url: https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_386.rpm
         - name: 'Linux amd64 RPM format installation package'
-          url: "https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_amd64.rpm"
+          url: https://gitlab.com/doctorfree/DriveCommandLine/-/jobs/${BUILD_JOB_ID}/artifacts/file/dist/DriveCommandLine_${VERSION}-${RELEASE}.linux_amd64.rpm
   only:
     - tags
