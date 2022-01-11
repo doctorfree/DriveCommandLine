@@ -35,6 +35,7 @@ do
 
     # Skip some platforms
     [ "${GOPLAT}" == "android_arm" ] && continue
+    [ "${GOPLAT}" == "android_386" ] && continue
     [ "${GOPLAT}" == "ios_amd64" ] && continue
     [ "${GOPLAT}" == "ios_arm64" ] && continue
 

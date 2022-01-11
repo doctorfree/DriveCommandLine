@@ -83,7 +83,7 @@ Currently DriveCommandLine and control scripts include support for:
 DriveCommandLine supports installation package and distribution archives
 for multiple platforms and architectures including:
 
-aix_ppc64, android_386, android_amd64, android_arm64, darwin_amd64,
+aix_ppc64, android_amd64, android_arm64, darwin_amd64,
 darwin_arm64, dragonfly_amd64, freebsd_386, freebsd_amd64, freebsd_arm64,
 freebsd_arm, illumos_amd64, js_wasm, linux_386, linux_amd64, linux_arm64,
 linux_arm, linux_mips64, linux_mips64le, linux_mips, linux_mipsle,
