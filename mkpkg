@@ -140,7 +140,7 @@ Description: Google Drive Command Line Tools
        --define "_version ${PKG_VER}" \
        --define "_release ${PKG_REL}" \
        --define "_sourcedir ${OUT_DIR}" \
-       --define "_rpmfilename %%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.${OPSM}_%%{ARCH}.rpm" \
+       --define "_rpmfilename %%{ARCH}/%%{NAME}_%%{VERSION}-%%{RELEASE}.${OPSM}_%%{ARCH}.rpm" \
        --buildroot ${SRC}/${SRC_NAME}/${OUT_DIR}/BUILDROOT \
        ${OUT_DIR}/rpm/${PKG_NAME}.spec
 
