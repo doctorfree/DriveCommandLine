@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-09 January 2022, DriveCommandLine version 2.1.1 release 1:
+11 January 2022, DriveCommandLine version 2.1.1 release 1:
 
 This initial release of DriveCommandLine includes a build and packaging
 of the gdrive command line utility from https://github.com/prasmussen/gdrive
@@ -13,12 +13,36 @@ format, RPM format, compressed tar archive, and compressed zip archive formats.
 DriveCommandLine supports installation package and distribution archives
 for multiple platforms and architectures including:
 
-aix_ppc64, android_386, android_amd64, android_arm64, darwin_amd64,
+aix_ppc64, android_amd64, android_arm64, darwin_amd64,
 darwin_arm64, dragonfly_amd64, freebsd_386, freebsd_amd64, freebsd_arm64,
 freebsd_arm, illumos_amd64, js_wasm, linux_386, linux_amd64, linux_arm64,
 linux_arm, linux_mips64, linux_mips64le, linux_mips, linux_mipsle,
 linux_ppc64, linux_ppc64le, linux_riscv64
 
+Tue Jan 11 13:13:26 2022 -0800 d849113 :
+   Skip build for android_386
+Tue Jan 11 12:30:52 2022 -0800 7bbb726 :
+   Add all distribution archives and packages to CI release job
+Tue Jan 11 10:47:58 2022 -0800 e5d5c5b :
+   Try release CI without quotes in VERSION
+Mon Jan 10 16:31:44 2022 -0800 413ccbe :
+   Try release url links without quotes
+Mon Jan 10 15:00:10 2022 -0800 b6f5946 :
+   Do not strip in post install of rpm build, try CI release with quotes
+Mon Jan 10 13:57:29 2022 -0800 cc8efb1 :
+   Test creating release and release assets in CI
+Mon Jan 10 12:14:07 2022 -0800 4fc6e18 :
+   Fix env var setting, do not remove Google Drive folder when sync'ing
+Mon Jan 10 09:59:25 2022 -0800 a99822c :
+   Set GHOM if GDRIVE_CONFIG_DIR env var is set
+Sun Jan 9 13:17:42 2022 -0800 4b4fb95 :
+   Install zip if not found
+Sun Jan 9 12:32:00 2022 -0800 7279746 :
+   Create zip archives in CI if we have zip
+Sun Jan 9 12:10:17 2022 -0800 58cb2b8 :
+   Gzip'd tar archives are now given .tgz suffix
+Sun Jan 9 11:17:10 2022 -0800 fe7488c :
+   Update changelog in preparation for version 2.1.1 release 1
 Sun Jan 9 11:06:27 2022 -0800 96cfd68 :
    Use SRC_NAME rather than PKG_NAME
 Sun Jan 9 10:04:53 2022 -0800 b269953 :
