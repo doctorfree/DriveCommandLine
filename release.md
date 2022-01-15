@@ -32,11 +32,11 @@ package from the
 Install the DriveCommandLine package by executing the command
 
 ```bash
-sudo apt install ./DriveCommandLine_<version>-<release>.deb
+sudo apt install ./DriveCommandLine_<version>-<release>.linux_<architecture>.deb
 ```
 or
 ```console
-sudo dpkg -i ./DriveCommandLine_<version>-<release>.deb
+sudo dpkg -i ./DriveCommandLine_<version>-<release>.linux_<architecture>.deb
 ```
 
 ## RPM Package installation
@@ -52,11 +52,11 @@ package from the
 Install the DriveCommandLine package by executing the command
 
 ```bash
-sudo yum localinstall ./DriveCommandLine_<version>-<release>.rpm
+sudo yum localinstall ./DriveCommandLine_<version>-<release>.linux_<architecture>.rpm
 ```
 or
 ```console
-sudo rpm -i ./DriveCommandLine_<version>-<release>.rpm
+sudo rpm -i ./DriveCommandLine_<version>-<release>.linux_<architecture>.rpm
 ```
 
 ## Manual installation

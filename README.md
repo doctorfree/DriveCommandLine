@@ -50,6 +50,7 @@ documentation.
     1. [Synopsis of gdrive command](#synopsis-of-gdrive-command)
     1. [Synopsis of DriveCommandLine commands](#synopsis-of-drivecommandline-commands)
     1. [Examples](#examples)
+1. [Example application](#example-application)
 1. [Limitations](#limitations)
 1. [Troubleshooting](#troubleshooting)
 1. [Compile from source](#compile-from-source)
@@ -744,6 +745,35 @@ Syncs the local folder `MagicMirror` and its contents to the Google Drive folder
 `sync_from_drive MagicMirror/config`
 
 Syncs the local folder `MagicMirror/config` and its contents to the Google Drive folder `MagicMirror/config`
+
+## Example application
+
+A software distribution or packaged application may need to download files during
+or after the initial installation. For example, a Debian format package install
+might run a `postinst` script that downloads files the package requires from
+Google Drive rather than including these files in the installation package.
+
+Google Drive files and folders can be programmatically downloaded in a variety
+of ways. For example, the Python/Pip `gdown` utility can be used to download
+Google Drive files. However, automated Google Drive downloads require the Drive
+IDs of any files or folders to be downloaded in this manner.
+
+The DriveCommandLine package can be used to fetch these IDs. The workflow might
+look something like the following.
+
+Sync a local folder containing the files needed for download to a Google Drive:
+
+`sync2drive Applications/Downloads`
+
+Retrieve file and folder IDs in the Google Drive `Applications/Downloads` folder:
+
+`getfolderids -f Applications/Downloads`
+
+Edit the resulting list of IDs in the locally generated drive_ids file:
+
+`vi drive_ids/Applications_Downloads_file_ids.txt`
+
+Add the list of file and/or folder IDs needed for download to the `postinst` script.
 
 ## Limitations
 
