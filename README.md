@@ -755,8 +755,8 @@ Google Drive rather than including these files in the installation package.
 
 Google Drive files and folders can be programmatically downloaded in a variety
 of ways. For example, the Python/Pip `gdown` utility can be used to download
-Google Drive files. However, automated Google Drive downloads require the Drive
-IDs of any files or folders to be downloaded in this manner.
+Google Drive files. However, automated Google Drive downloads require the
+Google Drive IDs of any files or folders to be downloaded in this manner.
 
 The DriveCommandLine package can be used to fetch these IDs. The workflow might
 look something like the following.
