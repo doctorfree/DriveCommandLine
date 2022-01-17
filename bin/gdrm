@@ -72,11 +72,13 @@ get_gdhome() {
 TELL=
 splitpath=1
 recursive=
+deletelocal=
 
 usage() {
-  printf "\nUsage: gdrm [-c configdir] [-n] [-r] [-s] [-u] path/to/fileorfolder [file2 ...]"
+  printf "\nUsage: gdrm [-c configdir] [-d] [-n] [-r] [-s] [-u] path/to/fileorfolder [file2 ...]"
   printf "\nWhere:\n\t-n indicates tell me what you would do but don't do it"
   printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
+  printf "\n\t-d indicates delete local file(s) too"
   printf "\n\t-r indicates remove directory and its contents recursively"
   printf "\n\t-s indicates do not split path to identify name"
   printf "\n\t\t(useful when there is a slash in the filename)"
@@ -91,7 +93,7 @@ then
 else
     export GDRIVE=gdrive
 fi
-while getopts "c:nrsu" flag; do
+while getopts "c:dnrsu" flag; do
     case $flag in
         c)
             GHOM="${OPTARG}"
@@ -99,6 +101,9 @@ while getopts "c:nrsu" flag; do
             ;;
         n)
             TELL=1
+            ;;
+        d)
+            deletelocal=1
             ;;
         r)
             recursive="--recursive"
@@ -138,7 +143,7 @@ do
   [ "${parentid}" ] || {
     echo "Cannot locate parent id"
     echo "Run 'getfolderids' to populate folders with folder ids"
-    echo "Exiting without sync"
+    echo "Exiting without removal"
     exit 1
   }
 
@@ -167,8 +172,25 @@ do
       then
         echo "Would remove ${file} with id=${fid} with command:"
         echo "${GDRIVE} delete ${recursive} ${fid}"
+        [ "${deletelocal}" ] && {
+          echo "Would also delete local file(s) ${file} with command:"
+          if [ "${recursive}" ]
+          then
+            echo "rm -rf ${file}"
+          else
+            echo "rm -f ${file}"
+          fi
+        }
       else
         ${GDRIVE} delete ${recursive} ${fid}
+        [ "${deletelocal}" ] && {
+          if [ "${recursive}" ]
+          then
+            rm -rf "${file}"
+          else
+            rm -f "${file}"
+          fi
+        }
       fi
     }
   done <<< `${GDRIVE} list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`

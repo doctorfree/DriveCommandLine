@@ -9,7 +9,7 @@ date: January 04, 2022
 **gdrm** - show info for Google Drive files or folders
 
 # SYNOPSIS
-**gdrm** [ **-c** configdir ] [ **-n** ] [ **-r** ] [ **-s** ] [ **-u** ] path/to/fileorfolder [file2 ...]
+**gdrm** [ **-c** configdir ] [ **-d** ] [ **-n** ] [ **-r** ] [ **-s** ] [ **-u** ] path/to/fileorfolder [file2 ...]
 : Where 'path/to/file' or 'path/to/folder' are names of a Google Drive file or folder
 
 # DESCRIPTION
@@ -20,6 +20,9 @@ To remove a non-empty Google Drive folder, use the **-r** command line
 option to *gdrm*.
 
 # COMMAND LINE OPTIONS
+**-d**
+: indicates delete local file(s) also
+
 **-n**
 : indicates tell me what you would do but don't do it
 
@@ -60,6 +63,9 @@ Overridden by the `-c configdir` option.
 # EXAMPLES
 **gdrm README**
 : removes top-level Google Drive file `README`
+
+**gdrm -d README**
+: removes top-level Google Drive file `README` and local file `README`
 
 **gdrm foo/bar/spam**
 : removes Google Drive file `spam` located in folder `foo/bar`

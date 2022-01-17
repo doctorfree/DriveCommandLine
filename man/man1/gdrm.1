@@ -7,7 +7,7 @@
 \f[B]gdrm\f[R] - show info for Google Drive files or folders
 .SH SYNOPSIS
 .TP
-\f[B]gdrm\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
+\f[B]gdrm\f[R] [ \f[B]-c\f[R] configdir ] [ \f[B]-d\f[R] ] [ \f[B]-n\f[R] ] [ \f[B]-r\f[R] ] [ \f[B]-s\f[R] ] [ \f[B]-u\f[R] ] path/to/fileorfolder [file2 ...]
 Where \[aq]path/to/file\[aq] or \[aq]path/to/folder\[aq] are names of a
 Google Drive file or folder
 .SH DESCRIPTION
@@ -20,6 +20,9 @@ remove it.
 To remove a non-empty Google Drive folder, use the \f[B]-r\f[R] command
 line option to \f[I]gdrm\f[R].
 .SH COMMAND LINE OPTIONS
+.TP
+\f[B]-d\f[R]
+indicates delete local file(s) also
 .TP
 \f[B]-n\f[R]
 indicates tell me what you would do but don\[aq]t do it
@@ -66,6 +69,10 @@ Overridden by the \f[C]-c configdir\f[R] option.
 .TP
 \f[B]gdrm README\f[R]
 removes top-level Google Drive file \f[C]README\f[R]
+.TP
+\f[B]gdrm -d README\f[R]
+removes top-level Google Drive file \f[C]README\f[R] and local file
+\f[C]README\f[R]
 .TP
 \f[B]gdrm foo/bar/spam\f[R]
 removes Google Drive file \f[C]spam\f[R] located in folder
