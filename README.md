@@ -332,6 +332,7 @@ any of the following commands (click to view the man page online):
 - [man gdinfo](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdinfo.1.md)
 - [man gdlist](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdlist.1.md)
 - [man gdrm](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdrm.1.md)
+- [man gdshare](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdshare.1.md)
 - [man gdupload](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/gdupload.1.md)
 - [man getfolderids](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/getfolderids.1.md)
 - [man sync2drive](https://gitlab.com/doctorfree/DriveCommandLine/-/blob/master/markdown/sync2drive.1.md)
@@ -463,6 +464,7 @@ the DriveCommandLine wrapper scripts. These currently include:
 - `gdinfo` - get info on Google Drive files and folders
 - `gdlist` - list Google Drive files and folders
 - `gdrm` - remove Google Drive files and folders
+- `gdshare` - manage share permissions for Google Drive files and folders
 - `gdupload` - upload files and folders to Google Drive
 - `getfolderids` - retrieve Google Drive folder IDs and populate local folders with IDs
 - `sync2drive` - sync local files and folders to Google Drive (upload)
@@ -555,6 +557,12 @@ For example, to view the manual page for the *gdinfo* command, execute:
 
 `man gdinfo`.
 
+All DriveCommandLine commands accept **-c configdir** and **-m maxfiles** arguments:
+
+  -c 'configdir' specifies an alternative gdrive config folder (default: HOME/.gdrive)
+  -m 'maxfiles' specifies the maximum number of files in query return
+    (default: 1000)
+
 #### Get files
 ```
 gdget [-d] [-f] [-n] [-r] [-s] [-p path] [-o] [-u] path/to/fileorfolder [file2 ...]
@@ -601,6 +609,23 @@ options:
   -s                         Indicates do not split path to identify name (useful when there is a slash in the filename)
   -u                         Display a usage message and exit
   path/to/fileorfolder       Path of file or folder to remove
+```
+
+#### Manage Google Drive share permissionns
+```
+gdshare [-c configdir] [-m maxfiles] [-r role] [-t type] [-e email] [-d domain] [-D] [-R] [-l] [-n] [-u] path/to/fileorfolder [file2 ...]
+
+options:
+  -r 'role' specifies the share role: owner/writer/commenter/reader, default: reader
+  -t 'type' specifies the share type: user/group/domain/anyone, default: anyone
+  -e 'email' specifies the email address of the user or group to share the file with. Requires 'user' or 'group' as type
+  -d 'domain' specifies the name of Google Apps domain. Requires 'domain' as type
+  -D indicates make file discoverable by search engines
+  -R indicates delete all sharing permissions (owner roles will be skipped)
+  -l indicates list files share permissions
+  -n indicates tell me what you would do without doing it
+  -u displays this usage message
+  path/to/fileorfolder     Path of Google Drive file or folder to manage
 ```
 
 #### Upload files or folders
