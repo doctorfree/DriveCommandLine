@@ -5,12 +5,14 @@ BINS="sync2drive \
       gdinfo \
       gdlist \
       gdrive \
+      gdshare \
       gdupload \
       gdget \
       gdrm \
       sync_from_drive"
 
-MANS="gdupload.1 \
+MANS="gdshare.1 \
+      gdupload.1 \
       gdrm.1 \
       sync2drive.1 \
       gdget.1 \

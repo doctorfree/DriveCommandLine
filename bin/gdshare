@@ -1,0 +1,208 @@
+#!/bin/bash
+#
+# Author: Ronald Joe Record <ronaldrecord@gmail.com>
+#
+# See https://developers.google.com/drive/api/v3/ref-search-terms#operators
+# for more info on the Google Drive for Developers API (V3)
+#
+gdinst=`type -p gdrive`
+[ "${gdinst}" ] || {
+    echo "The 'gdrive' command is not installed or not in the execution PATH"
+    echo "Visit https://github.com/doctorfree/DriveCommandLine/releases to download"
+    echo "a 'DriveCommandLine' distribution archive or package for this platform"
+    exit 1
+}
+
+GHOM=${HOME}/.gdrive
+
+get_gdhome() {
+  [ -f ${GHOM}/gdhome ] || {
+    HERE="${HOME}/gdrive"
+    while true
+    do
+        read -p "Initializing gdrive home to ${HERE}. Ok ? ('Y'/'N'): " yn
+        case $yn in
+            [Yy]*)
+                [ -d ${GHOM} ] || {
+                  if [ -w ${GHOM}/.. ]
+                  then
+                    mkdir -p ${GHOM}
+                  else
+                    sudo mkdir -p ${GHOM}
+                    USER=$(stat -c '%U' ${HOME})
+                    GROUP=$(stat -c '%G' ${HOME})
+                    sudo chown ${USER}:${GROUP} ${GHOM}
+                  fi
+                }
+                echo "GDHOME=${HERE}" > ${GHOM}/gdhome
+                break
+                ;;
+            [Nn]*)
+                read -p "Enter your gdrive home: " gdhome
+                case ${gdhome} in
+                    *)
+                        echo "GDHOME=${gdhome}" > ${GHOM}/gdhome
+                        ;;
+                esac
+                break
+                ;;
+            * )
+                echo "Please answer yes or no."
+                ;;
+        esac
+    done
+  }
+
+  . ${GHOM}/gdhome
+  [ -d ${GDHOME} ] || {
+    if [ -w ${GDHOME}/.. ]
+    then
+      mkdir -p ${GDHOME}
+    else
+      sudo mkdir -p ${GDHOME}
+      USER=$(stat -c '%U' ${HOME})
+      GROUP=$(stat -c '%G' ${HOME})
+      sudo chown ${USER}:${GROUP} ${GDHOME}
+    fi
+  }
+  cd ${GDHOME}
+}
+
+usage() {
+  printf "\nUsage: gdshare [-c configdir] [-m maxfiles] [-r role] [-t type] [-e email] [-d domain] [-D] [-R] [-l] [-n] [-u] path/to/fileorfolder [file2 ...]"
+  printf "\nWhere:"
+  printf "\n\t-c 'configdir' specifies an alternative gdrive config folder (default: $HOME/.gdrive)"
+  printf "\n\t-m 'maxfiles' specifies the maximum number of files in query return"
+  printf "\n\t\t(default: 1000)"
+  printf "\n\t-r 'role' specifies the share role: owner/writer/commenter/reader, default: reader"
+  printf "\n\t-t 'type' specifies the share type: user/group/domain/anyone, default: anyone"
+  printf "\n\t-e 'email' specifies the email address of the user or group to share the file with. Requires 'user' or 'group' as type"
+  printf "\n\t-d 'domain' specifies the name of Google Apps domain. Requires 'domain' as type"
+  printf "\n\t-D indicates make file discoverable by search engines"
+  printf "\n\t-R indicates delete all sharing permissions (owner roles will be skipped)"
+  printf "\n\t-l indicates list files share permissions"
+  printf "\n\t-n indicates tell me what you would do without doing it"
+  printf "\n\t-u displays this usage message\n"
+  exit 1
+}
+
+if [ "${GDRIVE_CONFIG_DIR}" ]
+then
+    GHOM="${GDRIVE_CONFIG_DIR}"
+    export GDRIVE="gdrive --config ${GDRIVE_CONFIG_DIR}"
+else
+    export GDRIVE=gdrive
+fi
+
+roleopt=
+typeopt=
+mailopt=
+domopt=
+discopt=
+revopt=
+tellme=
+listperms=
+maxfiles=1000
+while getopts "c:r:t:e:d:DRlm:nu" flag; do
+    case $flag in
+        c)
+            GHOM="${OPTARG}"
+            export GDRIVE="gdrive --config ${OPTARG}"
+            ;;
+        D)
+            discopt="--discoverable"
+            ;;
+        R)
+            revopt="--revoke"
+            ;;
+        d)
+            domopt="--domain ${OPTARG}"
+            ;;
+        e)
+            mailopt="--email ${OPTARG}"
+            ;;
+        l)
+            listperms=1
+            ;;
+        m)
+            maxfiles=${OPTARG}
+            ;;
+        n)
+            tellme=1
+            ;;
+        r)
+            roleopt="--role ${OPTARG}"
+            ;;
+        t)
+            typeopt="--type ${OPTARG}"
+            ;;
+        u)
+            usage
+            ;;
+    esac
+done
+shift $(( OPTIND - 1 ))
+
+[ "$1" ] || usage
+
+# Check arguments
+[ "${domopt}" ] && {
+    [ "${typeopt}" == "--type domain" ] || {
+        echo "Name of Google Apps domain requires share type 'domain'"
+        usage
+    }
+}
+[ "${mailopt}" ] && {
+    [ "${typeopt}" == "--type user" ] || {
+      [ "${typeopt}" == "--type group" ] || {
+        echo "Email share address requires share type 'user' or 'group'"
+        usage
+      }
+    }
+}
+
+GDOPTS="--no-header --absolute --max ${maxfiles} --name-width 0"
+get_gdhome
+
+for file in "$@"
+do
+  fid=
+  pdir=`dirname "${file}"`
+  base=`basename "${file}"`
+  [ -f "${pdir}"/.folderid ] || {
+    echo "Missing ${pdir}/.folderid"
+    echo "Run 'getfolderids' to populate folders with ids"
+    echo "Skipping share management of ${file}"
+    continue
+  }
+  parentid=`cat "${pdir}"/.folderid`
+  # Check to see if this file or folder exists
+  while read match
+  do
+    id=`echo ${match} | awk ' { print $1 } '`
+    [ "${id}" ] || continue
+    path=`${GDRIVE} info ${id} | grep ^Path: | awk -F ':' ' { print $2 } '`
+    # Remove leading and trailing spaces
+    path="$(echo -e "${path}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    [ "${path}" == "${file}" ] && {
+      fid=${id}
+      break
+    }
+  done <<< `${GDRIVE} list ${GDOPTS} --query " name = '${base}' and parents in '${parentid}'"`
+
+  if [ "${listperms}" ]
+  then
+    ${GDRIVE} share list ${fid}
+  else
+    if [ "${tellme}" ]
+    then
+      echo "Would set Google Drive share management for ${file} with gdrive command:"
+    else
+      echo "Setting Google Drive share management for ${file} with gdrive command:"
+    fi
+    echo "${GDRIVE} share ${roleopt} ${typeopt} ${mailopt} ${domopt} ${discopt} ${revopt} ${fid}"
+    [ "${tellme}" ] || {
+      ${GDRIVE} share ${roleopt} ${typeopt} ${mailopt} ${domopt} ${discopt} ${revopt} ${fid}
+    }
+  fi
+done
