@@ -135,6 +135,7 @@ Description: Google Drive Command Line Tools
     [ -d ${OUT_DIR}/BUILDROOT/usr ] && ${SUDO} rm -rf ${OUT_DIR}/BUILDROOT/usr
     ${SUDO} cp -a ${OUT_DIR}/usr ${OUT_DIR}/BUILDROOT/usr
 
+    [ "${ARCH}" == "amd64" ] && ARCH=x86_64
     ${SUDO} rpmbuild -ba --build-in-place --target "${ARCH}-unknown-${OPSM}" \
        --define "_topdir ${OUT_DIR}" \
        --define "_version ${PKG_VER}" \

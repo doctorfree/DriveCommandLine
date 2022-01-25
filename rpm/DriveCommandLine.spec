@@ -27,5 +27,8 @@ cp -a %{_sourcedir}/usr %{buildroot}/usr
 
 %files
 /usr
+%exclude %dir /usr/local/share/man/man1
+%exclude %dir /usr/local/share/man
+%exclude %dir /usr/local/share/doc
 
 %changelog
