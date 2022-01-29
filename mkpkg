@@ -122,7 +122,7 @@ Description: Google Drive Command Line Tools
 
     # Experimental RPM distribution build
     cd "${SRC}/${SRC_NAME}"
-    [ -d rpm ] && ${SUDO} cp -a rpm ${OUT_DIR}/rpm
+    [ -d pkg/rpm ] && ${SUDO} cp -a pkg/rpm ${OUT_DIR}/rpm
     [ -d ${OUT_DIR}/rpm ] || ${SUDO} mkdir ${OUT_DIR}/rpm
 
     have_rpm=`type -p rpmbuild`
