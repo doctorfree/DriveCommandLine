@@ -147,7 +147,7 @@ BU_DIR="${GDHOME}/Bak/drive_ids"
 
 FOLDER=
 [ "$1" ] && {
-  FOLDER="$1"
+  FOLDER=`echo "$1" | sed -e "s/\.\///"`
   echo "Setting folder IDs for folder ${FOLDER} and its subfolders"
 }
 
@@ -231,10 +231,10 @@ if [ "${TELL}" ]
 then
   echo "Would backup any existing file id lists"
 else
-  [ -f ${FIDLIST} ] && mv ${FIDLIST} ${FIDBULIST}$$
-  touch ${FIDLIST}
-  [ -f ${DIRLIST} ] && mv ${DIRLIST} ${DIRBULIST}$$
-  touch ${DIRLIST}
+  [ -f "${FIDLIST}" ] && mv "${FIDLIST}" "${FIDBULIST}$$"
+  touch "${FIDLIST}"
+  [ -f "${DIRLIST}" ] && mv "${DIRLIST}" "${DIRBULIST}$$"
+  touch "${DIRLIST}"
 fi
 
 [ "${VERB}" ] && {
@@ -269,7 +269,7 @@ getids() {
       then
         echo "Would add folder id for ${thisPath} to folder id list"
       else
-        echo "${thisPath} = ${thisID}" >> ${DIRLIST}
+        echo "${thisPath} = ${thisID}" >> "${DIRLIST}"
         [ -d "${thisPath}" ] || mkdir -p "${thisPath}"
         echo "Setting folder ID for '${thisPath}'"
         echo "${thisID}" > "${thisPath}"/.folderid
@@ -279,7 +279,7 @@ getids() {
       then
         echo "Would add file id for ${thisPath} to file id list"
       else
-        echo "${thisPath} = ${thisID}" >> ${FIDLIST}
+        echo "${thisPath} = ${thisID}" >> "${FIDLIST}"
       fi
     fi
   done <<< `${GDRIVE} list ${GDOPTS} --query " '$1' in parents"`
@@ -337,10 +337,10 @@ if [ "${TELL}" ]
 then
   echo "Would remove duplicate file and folder id lists"
 else
-  [ -f ${FIDBULIST}$$ ] && {
-    diff ${FIDLIST} ${FIDBULIST}$$ > /dev/null && rm -f ${FIDBULIST}$$
+  [ -f "${FIDBULIST}$$" ] && {
+    diff "${FIDLIST}" "${FIDBULIST}$$" > /dev/null && rm -f "${FIDBULIST}$$"
   }
-  [ -f ${DIRBULIST}$$ ] && {
-    diff ${DIRLIST} ${DIRBULIST}$$ > /dev/null && rm -f ${DIRBULIST}$$
+  [ -f "${DIRBULIST}$$" ] && {
+    diff "${DIRLIST}" "${DIRBULIST}$$" > /dev/null && rm -f "${DIRBULIST}$$"
   }
 fi
