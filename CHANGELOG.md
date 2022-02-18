@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+18 February 2022, DriveCommandLine version 2.1.1 release 2:
+
+Add gdshare command, fix issues with spaces in file and folder names
+
 11 January 2022, DriveCommandLine version 2.1.1 release 1:
 
 This initial release of DriveCommandLine includes a build and packaging
@@ -19,6 +23,24 @@ freebsd_arm, illumos_amd64, js_wasm, linux_386, linux_amd64, linux_arm64,
 linux_arm, linux_mips64, linux_mips64le, linux_mips, linux_mipsle,
 linux_ppc64, linux_ppc64le, linux_riscv64
 
+Fri Feb 18 15:05:44 2022 -0800 1b46be2 :
+   Fix bug in getfolderids with spaces in file or folder names
+Sat Jan 29 08:58:53 2022 -0800 ca0955f :
+   Use pkg/release.md for release description in Gitlab release creation
+Tue Jan 25 09:48:05 2022 -0800 4cdbc75 :
+   Merge branch 'master' of ssh://gitlab.com/doctorfree/DriveCommandLine
+Tue Jan 25 09:47:48 2022 -0800 15bdc07 :
+   Set ARCH on x86_64 rpm, exclude system dirs from RPM packaging
+Tue Jan 18 12:07:39 2022 -0800 f8fbbf3 :
+   Add gdshare command
+Mon Jan 17 08:52:12 2022 -0800 fedf2ee :
+   Added -d option to gdrm to remove local file
+Sat Jan 15 12:25:47 2022 -0800 8f3715b :
+   Clarify Drive IDs
+Sat Jan 15 12:21:41 2022 -0800 b1402a5 :
+   Add section for Example application
+Tue Jan 11 13:23:33 2022 -0800 7a47e4e :
+   Update changelog in preparation for version 2.1.1 release 1
 Tue Jan 11 13:13:26 2022 -0800 d849113 :
    Skip build for android_386
 Tue Jan 11 12:30:52 2022 -0800 7bbb726 :

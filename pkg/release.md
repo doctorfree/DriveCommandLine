@@ -69,7 +69,7 @@ As root, extract the archive. For example, to install on Mac OS X
 from the gzip'd tar archive:
 
 ```bash
-tar xzf /path/to/downloaded/DriveCommandLine_2.1.1-1.darwin_amd64.tgz
+tar xzf /path/to/downloaded/DriveCommandLine_2.1.1-2.darwin_amd64.tgz
 ```
 
 ## Authentication and access
